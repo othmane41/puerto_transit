@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+*.pyo
+docker/filestore/
+.DS_Store

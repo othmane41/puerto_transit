@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_puerto_dossier_charge_form" model="ir.ui.view">
+        <field name="name">puerto.dossier.charge.form</field>
+        <field name="model">puerto.dossier.charge</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="dossier_id"/>
+                            <field name="prestataire_id"/>
+                            <field name="prestation_id"/>
+                            <field name="mode_facturation"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="ref_document"/>
+                            <field name="prix_unitaire"/>
+                            <field name="quantite"/>
+                            <field name="montant_total"/>
+                            <field name="currency_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="commentaire"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_puerto_dossier_charge_tree" model="ir.ui.view">
+        <field name="name">puerto.dossier.charge.tree</field>
+        <field name="model">puerto.dossier.charge</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="dossier_id"/>
+                <field name="prestataire_id"/>
+                <field name="prestation_id"/>
+                <field name="date"/>
+                <field name="prix_unitaire"/>
+                <field name="quantite"/>
+                <field name="montant_total"/>
+                <field name="currency_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_puerto_dossier_charge" model="ir.actions.act_window">
+        <field name="name">Charges Transit</field>
+        <field name="res_model">puerto.dossier.charge</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

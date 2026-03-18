@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Menu racine -->
+    <menuitem id="menu_puerto_root"
+              name="Transit"
+              sequence="50"
+              web_icon="puerto_transit,static/description/icon.png"/>
+
+    <!-- Dossiers -->
+    <menuitem id="menu_puerto_dossiers"
+              name="Dossiers"
+              parent="menu_puerto_root"
+              sequence="10"/>
+    <menuitem id="menu_puerto_all_dossiers"
+              name="Tous les dossiers"
+              parent="menu_puerto_dossiers"
+              action="action_puerto_dossier"
+              sequence="10"/>
+
+    <!-- Facturation -->
+    <menuitem id="menu_puerto_facturation"
+              name="Facturation"
+              parent="menu_puerto_root"
+              sequence="20"/>
+    <menuitem id="menu_puerto_factures"
+              name="Factures Transit"
+              parent="menu_puerto_facturation"
+              action="action_puerto_dossier_facture"
+              sequence="10"/>
+    <menuitem id="menu_puerto_charges"
+              name="Charges / Débours"
+              parent="menu_puerto_facturation"
+              action="action_puerto_dossier_charge"
+              sequence="20"/>
+
+    <!-- Configuration -->
+    <menuitem id="menu_puerto_config"
+              name="Configuration"
+              parent="menu_puerto_root"
+              sequence="90"/>
+    <menuitem id="menu_puerto_config_regime"
+              name="Régimes"
+              parent="menu_puerto_config"
+              action="action_puerto_regime"
+              sequence="10"/>
+    <menuitem id="menu_puerto_config_bureau"
+              name="Bureaux"
+              parent="menu_puerto_config"
+              action="action_puerto_bureau"
+              sequence="20"/>
+    <menuitem id="menu_puerto_config_arrondissement"
+              name="Arrondissements"
+              parent="menu_puerto_config"
+              action="action_puerto_arrondissement"
+              sequence="30"/>
+    <menuitem id="menu_puerto_config_lieu_stockage"
+              name="Lieux de Stockage"
+              parent="menu_puerto_config"
+              action="action_puerto_lieu_stockage"
+              sequence="40"/>
+    <menuitem id="menu_puerto_config_terminal"
+              name="Terminaux"
+              parent="menu_puerto_config"
+              action="action_puerto_terminal"
+              sequence="50"/>
+    <menuitem id="menu_puerto_config_contenant"
+              name="Contenants"
+              parent="menu_puerto_config"
+              action="action_puerto_contenant"
+              sequence="60"/>
+    <menuitem id="menu_puerto_config_priorite"
+              name="Priorités"
+              parent="menu_puerto_config"
+              action="action_puerto_priorite"
+              sequence="70"/>
+    <menuitem id="menu_puerto_config_mode_transport"
+              name="Modes de Transport"
+              parent="menu_puerto_config"
+              action="action_puerto_mode_transport"
+              sequence="80"/>
+    <menuitem id="menu_puerto_config_type_transport"
+              name="Types de Transport"
+              parent="menu_puerto_config"
+              action="action_puerto_type_transport"
+              sequence="90"/>
+    <menuitem id="menu_puerto_config_prestation"
+              name="Prestations"
+              parent="menu_puerto_config"
+              action="action_puerto_prestation"
+              sequence="100"/>
+
+</odoo>

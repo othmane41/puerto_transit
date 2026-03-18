@@ -1,0 +1,1548 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!-- ══ HOME PORTAL — tuile dossiers ════════════════════════════════════════ -->
+<template id="portal_my_home_dossiers" name="Portal My Home: Transit"
+          inherit_id="portal.portal_my_home"
+          customize_show="True"
+          priority="40">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+        <t t-call="portal.portal_docs_entry">
+            <t t-set="title">Mes Dossiers Transit</t>
+            <t t-set="url">/my/dossiers</t>
+            <t t-set="count" t-value="dossier_count"/>
+        </t>
+    </xpath>
+</template>
+
+<!-- ══ LISTE DOSSIERS ════════════════════════════════════════════════════ -->
+<template id="portal_my_dossiers" name="Mes Dossiers Transit">
+    <t t-call="portal.portal_layout">
+        <div class="o_pt_page">
+
+            <!-- ── Header ── -->
+            <div class="o_pt_list_header">
+                <h4>Mes Dossiers Transit</h4>
+                <a href="/my/dossiers/new" class="o_pt_btn_new">
+                    <i class="fa fa-plus"/> Nouveau Dossier
+                </a>
+            </div>
+
+            <!-- ── Tabs ── -->
+            <div class="o_pt_tabs_bar">
+                <ul class="o_pt_tabs" role="tablist">
+                    <li role="presentation">
+                        <a t-attf-class="o_pt_tab #{'active' if active_tab == 'ouverture' else ''}"
+                           data-bs-toggle="tab" href="#tab-list-ouverture" role="tab">
+                            Ouverture dossier
+                        </a>
+                    </li>
+                    <li role="presentation">
+                        <a t-attf-class="o_pt_tab #{'active' if active_tab == 'factures' else ''}"
+                           data-bs-toggle="tab" href="#tab-list-factures" role="tab">
+                            Factures
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- ── Tab content ── -->
+            <div class="tab-content" style="padding:14px;">
+
+                <!-- ═ TAB : Ouverture dossier ═ -->
+                <div t-attf-class="tab-pane fade #{'show active' if active_tab == 'ouverture' else ''}"
+                     id="tab-list-ouverture" role="tabpanel">
+                    <t t-if="not dossiers">
+                        <div class="o_pt_table_wrap p-4 text-center text-muted" style="font-size:13px;">
+                            Aucun dossier. <a href="/my/dossiers/new">Créer votre premier dossier</a>.
+                        </div>
+                    </t>
+                    <t t-if="dossiers">
+                        <div class="o_pt_table_wrap">
+                            <table class="o_pt_table">
+                                <thead>
+                                    <tr>
+                                        <th>N° Dossier</th>
+                                        <th>Type</th>
+                                        <th>Date Création</th>
+                                        <th>Soumissionnaire</th>
+                                        <th>ETD/ETA</th>
+                                        <th>Priorité</th>
+                                        <th>Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="dossiers" t-as="dossier">
+                                        <tr>
+                                            <td><a t-attf-href="/my/dossiers/#{dossier.id}"><t t-esc="dossier.name"/></a></td>
+                                            <td><t t-esc="dict(dossier._fields['type_dossier'].selection).get(dossier.type_dossier, '')"/></td>
+                                            <td><span t-field="dossier.date_creation" t-options='{"widget":"datetime"}'/></td>
+                                            <td><span t-field="dossier.partner_id"/></td>
+                                            <td><span t-field="dossier.date_etd_eta" t-options='{"widget":"datetime"}'/></td>
+                                            <td><span t-field="dossier.priorite_id"/></td>
+                                            <td>
+                                                <span t-attf-class="o_pt_badge o_pt_badge_#{dossier.state}">
+                                                    <t t-esc="dict(dossier._fields['state'].selection).get(dossier.state, '')"/>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div t-if="pager" class="text-center mt-3">
+                            <t t-call="portal.pager"/>
+                        </div>
+                    </t>
+                </div>
+
+                <!-- ═ TAB : Factures ═ -->
+                <div t-attf-class="tab-pane fade #{'show active' if active_tab == 'factures' else ''}"
+                     id="tab-list-factures" role="tabpanel">
+
+                    <!-- Stats -->
+                    <div class="o_pt_facture_stats">
+                        <div class="o_pt_facture_stat">
+                            <span class="o_pt_facture_stat_label">Nombre total de lignes de factures</span>
+                            <span class="o_pt_facture_stat_value"><t t-esc="total_lignes"/></span>
+                        </div>
+                        <div class="o_pt_facture_stat">
+                            <span class="o_pt_facture_stat_label">Poids net total</span>
+                            <span class="o_pt_facture_stat_value"><t t-esc="'%.3f' % total_poids_net"/></span>
+                        </div>
+                        <div class="o_pt_facture_stat">
+                            <span class="o_pt_facture_stat_label">Poids brut total</span>
+                            <span class="o_pt_facture_stat_value"><t t-esc="'%.3f' % total_poids_brut"/></span>
+                        </div>
+                    </div>
+
+                    <!-- Toolbar + Table -->
+                    <div class="o_pt_facture_table_wrap" style="margin:14px 0 0;">
+                        <div class="o_pt_facture_toolbar">
+                            <div class="o_pt_facture_toolbar_left">
+                                <button type="button" class="o_pt_toolbar_btn o_pt_toolbar_btn_add"><i class="fa fa-plus"/></button>
+                                <button type="button" class="o_pt_toolbar_btn o_pt_toolbar_btn_edit"><i class="fa fa-check"/></button>
+                                <button type="button" class="o_pt_toolbar_btn o_pt_toolbar_btn_del"><i class="fa fa-trash"/></button>
+                                <button type="button" class="o_pt_btn_generer">Générer Facture</button>
+                            </div>
+                            <div class="o_pt_facture_toolbar_center">Liste des factures</div>
+                            <div class="o_pt_facture_toolbar_right">
+                                <div class="o_pt_toolbar_export">Exportation <i class="fa fa-chevron-down"/></div>
+                                <div class="o_pt_toolbar_cols">colonnes sélectionnées <i class="fa fa-bars"/></div>
+                            </div>
+                        </div>
+
+                        <table class="o_pt_table">
+                            <thead>
+                                <tr>
+                                    <th style="width:32px;"><input type="checkbox" disabled="disabled"/></th>
+                                    <th>Numéro d'ordre</th>
+                                    <th>Date de facturation</th>
+                                    <th>Numéro de facture</th>
+                                    <th>Fournisseur</th>
+                                    <th>Devise</th>
+                                    <th>Prix total</th>
+                                    <th>Poids net total</th>
+                                    <th>Dossier</th>
+                                    <th>Incoterm</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-if="all_factures">
+                                    <t t-foreach="all_factures" t-as="f">
+                                        <tr>
+                                            <td><input type="checkbox" disabled="disabled"/></td>
+                                            <td><t t-esc="f_index + 1"/></td>
+                                            <td><span t-field="f.date_facture"/></td>
+                                            <td><t t-esc="f.num_facture"/></td>
+                                            <td><span t-field="f.partner_id"/></td>
+                                            <td><span t-field="f.currency_id"/></td>
+                                            <td><span t-field="f.valeur_total"/></td>
+                                            <td><span t-field="f.poids_net_total"/></td>
+                                            <td><t t-esc="f.dossier_id.name"/></td>
+                                            <td><span t-field="f.incoterm_id"/></td>
+                                        </tr>
+                                    </t>
+                                </t>
+                                <t t-else="">
+                                    <tr>
+                                        <td colspan="10" class="o_pt_facture_empty">Aucun enregistrement trouvé.</td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <div class="o_pt_facture_pagination">
+                            <span class="o_pt_page_btn">«</span>
+                            <span class="o_pt_page_btn">‹</span>
+                            <span class="o_pt_page_btn o_pt_page_active">1</span>
+                            <span class="o_pt_page_btn">›</span>
+                            <span class="o_pt_page_btn">»</span>
+                            <select class="o_pt_page_size"><option>10</option><option>25</option><option>50</option></select>
+                        </div>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="o_pt_facture_nav">
+                        <a class="o_pt_nav_btn o_pt_nav_close" href="/my">Fermer</a>
+                    </div>
+                </div>
+
+            </div><!-- /tab-content -->
+        </div>
+    </t>
+</template>
+
+<!-- ══ DÉTAIL DOSSIER ════════════════════════════════════════════════════ -->
+<template id="portal_my_dossier_detail" name="Détail Dossier Transit">
+    <t t-call="portal.portal_layout">
+        <div class="o_pt_page">
+
+            <!-- ══ ENTÊTE DOSSIER — pleine largeur, 4 colonnes ══ -->
+            <div class="o_pt_meta_bar o_pt_fullwidth">
+                <div class="o_pt_meta_grid">
+
+                    <!-- ── Colonne 1 ── -->
+                    <div class="o_pt_meta_col">
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">N° Dossier / Date&amp;heure Création</span>
+                            <span class="o_pt_meta_value">
+                                <t t-esc="dossier.name"/><t t-if="dossier.date_creation"> / <span t-field="dossier.date_creation" t-options='{"widget":"datetime"}'/></t>
+                            </span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Soumissionnaire</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.partner_id"/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Client de facturation</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.client_facturation_id"/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Date de réception (Demande de service)</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.date_reception_demande" t-options='{"widget":"datetime"}'/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Annexe (Demande de service)</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.annexe_demande"/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Date ETD/ETA</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.date_etd_eta" t-options='{"widget":"datetime"}'/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Date de réception (dernier élément déclaratif reçu)</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.date_reception_dernier_element" t-options='{"widget":"datetime"}'/></span>
+                        </div>
+                    </div>
+
+                    <!-- ── Colonne 2 ── -->
+                    <div class="o_pt_meta_col">
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Catégorie</span>
+                            <span class="o_pt_meta_value"><t t-esc="dict(dossier._fields['categorie'].selection).get(dossier.categorie, '')"/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Dum initiale</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.num_dum_initiale"/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Date Dum Début / Date Dum fin</span>
+                            <span class="o_pt_meta_value">
+                                <span t-field="dossier.date_debut_dum" t-options='{"widget":"datetime"}'/> / <span t-field="dossier.date_fin_dum" t-options='{"widget":"datetime"}'/>
+                            </span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Bureau de dédouanement</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.bureau_dedouanement_id"/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Arrondissement de dédouanement</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.arrondissement_id"/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Lieu de stockage de dédouanement</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.lieu_stockage_id"/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Conditions de livraison /Incoterm</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.incoterm_id"/></span>
+                        </div>
+                    </div>
+
+                    <!-- ── Colonne 3 ── -->
+                    <div class="o_pt_meta_col">
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Type dossier (Import / Export / Cession / Intervention)</span>
+                            <span class="o_pt_meta_value"><t t-esc="dict(dossier._fields['type_dossier'].selection).get(dossier.type_dossier, '')"/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Dum Définitive / Sous-Dum</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.num_dum_definitive"/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Régime douanier</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.regime_id"/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Bureau de destination</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.bureau_destination_id"/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Lieu de stockage de destination</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.lieu_stockage_dest_id"/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Devise</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.currency_id"/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Matricule</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.matricule"/></span>
+                        </div>
+                    </div>
+
+                    <!-- ── Colonne 4 ── -->
+                    <div class="o_pt_meta_col">
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Priorité  |  Sélectivité : <t t-esc="dict(dossier._fields['selectivite'].selection).get(dossier.selectivite, '')"/></span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.priorite_id"/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Nature de marchandise</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.nature_marchandise"/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Type de contenant : Palette / Nombre de contenant</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.type_contenant_palette"/> / <span t-field="dossier.nb_contenant_palette"/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Type de contenant : Colis / Nombre de contenant</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.type_contenant_colis"/> / <span t-field="dossier.nb_contenant_colis"/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Poids brut Total</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.poids_brut_total"/> kg</span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Référence client</span>
+                            <span class="o_pt_meta_value"><span t-field="dossier.reference_client"/></span>
+                        </div>
+                        <div class="o_pt_meta_item">
+                            <span class="o_pt_meta_label">Groupage (Oui/ Non) – Liste des cas</span>
+                            <span class="o_pt_meta_value"><t t-esc="'Oui' if dossier.groupage else 'Non'"/></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ── Tabs + boutons d'action ── -->
+            <div class="o_pt_tabs_bar">
+                <ul class="o_pt_tabs" id="dossierTabs" role="tablist">
+                    <li role="presentation">
+                        <a class="o_pt_tab active" id="tab-ouverture-link"
+                           data-bs-toggle="tab" href="#tab-ouverture" role="tab">Ouverture dossier</a>
+                    </li>
+                    <li role="presentation">
+                        <a class="o_pt_tab" id="tab-factures-link"
+                           data-bs-toggle="tab" href="#tab-factures" role="tab">Factures</a>
+                    </li>
+                    <li role="presentation">
+                        <a class="o_pt_tab" id="tab-charges-link"
+                           data-bs-toggle="tab" href="#tab-charges" role="tab">Charges / Débours</a>
+                    </li>
+                    <li role="presentation">
+                        <a class="o_pt_tab" id="tab-ventilation-link"
+                           data-bs-toggle="tab" href="#tab-ventilation" role="tab">Ventilation</a>
+                    </li>
+                    <li role="presentation">
+                        <a class="o_pt_tab" id="tab-signature-link"
+                           data-bs-toggle="tab" href="#tab-signature" role="tab">Signature</a>
+                    </li>
+                </ul>
+                <div class="o_pt_actions">
+                    <a href="#tab-charges" data-bs-toggle="tab" class="o_pt_action_btn">Charges / Débours</a>
+                    <a href="#tab-documents-annexes" data-bs-toggle="tab" class="o_pt_action_btn">Documents annexés</a>
+                    <a href="#tab-circuit" data-bs-toggle="tab" class="o_pt_action_btn">Circuit dossier</a>
+                </div>
+            </div>
+
+            <!-- ── Layout 3 colonnes ── -->
+            <div class="o_pt_layout">
+
+                <!-- Sidebar gauche : Documents annexés -->
+                <div class="o_pt_sidebar_left">
+                    <div class="o_pt_sidebar_title">Documents annexés</div>
+                    <t t-if="dossier.document_ids">
+                        <t t-foreach="dossier.document_ids" t-as="doc">
+                            <div class="o_pt_sidebar_item">
+                                <t t-if="doc.attachment_id">
+                                    <a t-attf-href="/web/content/#{doc.attachment_id.id}?download=true"
+                                       class="o_pt_sidebar_link">
+                                        <i class="fa fa-paperclip me-1"/>
+                                        <t t-esc="doc.nom_document"/>
+                                    </a>
+                                </t>
+                                <t t-else="">
+                                    <span class="o_pt_sidebar_link" style="color:#374151;">
+                                        <i class="fa fa-file-o me-1"/>
+                                        <t t-esc="doc.nom_document"/>
+                                    </span>
+                                </t>
+                            </div>
+                        </t>
+                    </t>
+                    <t t-else="">
+                        <div class="o_pt_sidebar_btn">Bouton d'annexation / Afficher les annexes</div>
+                    </t>
+                </div>
+
+                <!-- Contenu principal — tab content -->
+                <div class="o_pt_main">
+                    <div class="tab-content">
+
+                        <!-- ═══ TAB : Ouverture dossier ═══ -->
+                        <div class="tab-pane fade show active" id="tab-ouverture" role="tabpanel">
+
+                            <!-- Section : Déclaration des anomalies / Transport -->
+                            <div class="o_pt_section">
+                                <div class="o_pt_section_header">
+                                    <span class="o_pt_section_title">Déclaration des anomalies</span>
+                                    <button type="button" class="o_pt_section_btn">Bouton</button>
+                                </div>
+                                <div class="o_pt_section_body" style="padding:0;">
+                                    <div class="o_pt_field_grid cols-4">
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Mode de transport</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.mode_transport_id"/></span>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Type de transport</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.type_transport_id"/></span>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Date &amp; heure de voyage</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.date_voyage" t-options='{"widget":"datetime"}'/></span>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Transporteur</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.transporteur_id"/></span>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Nombre de transport</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.nb_transport"/></span>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Marque/Réf. Transport</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.marque_ref_transport"/></span>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Date de présentation du moyen</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.date_presentation" t-options='{"widget":"datetime"}'/></span>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">&#160;</span>
+                                            <span class="o_pt_field_empty"/>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Terminal</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.terminal_id"/></span>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Sous type d'unité</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.sous_type_unite"/></span>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Pays de provenance</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.pays_provenance_id"/></span>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Pays d'origine</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.pays_origine_id"/></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Section : Scellés -->
+                            <div class="o_pt_section">
+                                <div class="o_pt_section_body" style="padding:0;">
+                                    <div class="o_pt_field_grid cols-4">
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Propriétaire des scellés</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.proprietaire_scelles"/></span>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">PT/Transporteur/Autres</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.pt_transporteur_autres"/></span>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Centre RC / N°RC</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.centre_rc"/></span>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">N° Série des scellés</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.num_serie_scelles"/></span>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Nombre des scellés</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.nb_scelles"/></span>
+                                        </div>
+                                        <div class="o_pt_field"><span class="o_pt_field_empty"/></div>
+                                        <div class="o_pt_field"><span class="o_pt_field_empty"/></div>
+                                        <div class="o_pt_field"><span class="o_pt_field_empty"/></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Section : DS -->
+                            <div class="o_pt_section">
+                                <div class="o_pt_section_body" style="padding:0;">
+                                    <div class="o_pt_field_grid cols-4">
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Type DS</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.type_ds"/></span>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Référence DS</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.ref_ds"/></span>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Lieu de chargement</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.lieu_chargement"/></span>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Référence du Lot</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.num_lot"/></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Section : Expéditeur / Destinataire -->
+                            <div class="o_pt_section">
+                                <div class="o_pt_section_body" style="padding:0;">
+                                    <div class="o_pt_field_grid cols-2" style="border:none;">
+                                        <div style="border-right:1px solid #f0f0f0; padding:10px 12px;">
+                                            <div class="o_pt_subsection_title">Expéditeur</div>
+                                            <div class="o_pt_field_grid cols-1" style="border:none;">
+                                                <div class="o_pt_field" style="border-right:none;">
+                                                    <span class="o_pt_field_label">Adresse</span>
+                                                    <span class="o_pt_field_val"><span t-field="dossier.expediteur_id.street"/></span>
+                                                </div>
+                                                <div class="o_pt_field" style="border-right:none;">
+                                                    <span class="o_pt_field_label">Ville</span>
+                                                    <span class="o_pt_field_val"><span t-field="dossier.expediteur_id.city"/></span>
+                                                </div>
+                                                <div class="o_pt_field" style="border-right:none;">
+                                                    <span class="o_pt_field_label">Pays</span>
+                                                    <span class="o_pt_field_val"><span t-field="dossier.expediteur_id.country_id"/></span>
+                                                </div>
+                                                <div class="o_pt_field" style="border-right:none;">
+                                                    <span class="o_pt_field_label">De</span>
+                                                    <span class="o_pt_field_val"><span t-field="dossier.expediteur_id"/></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="padding:10px 12px;">
+                                            <div class="o_pt_subsection_title">Destinataire</div>
+                                            <div class="o_pt_field_grid cols-1" style="border:none;">
+                                                <div class="o_pt_field" style="border-right:none;">
+                                                    <span class="o_pt_field_label">Adresse</span>
+                                                    <span class="o_pt_field_val"><span t-field="dossier.destinataire_id.street"/></span>
+                                                </div>
+                                                <div class="o_pt_field" style="border-right:none;">
+                                                    <span class="o_pt_field_label">Ville</span>
+                                                    <span class="o_pt_field_val"><span t-field="dossier.destinataire_id.city"/></span>
+                                                </div>
+                                                <div class="o_pt_field" style="border-right:none;">
+                                                    <span class="o_pt_field_label">Pays</span>
+                                                    <span class="o_pt_field_val"><span t-field="dossier.destinataire_id.country_id"/></span>
+                                                </div>
+                                                <div class="o_pt_field" style="border-right:none;">
+                                                    <span class="o_pt_field_label">À</span>
+                                                    <span class="o_pt_field_val"><span t-field="dossier.destinataire_id"/></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Section : Marchandise -->
+                            <div class="o_pt_section">
+                                <div class="o_pt_section_body" style="padding:0;">
+                                    <div class="o_pt_field_grid cols-4">
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Type de contenant</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.contenant_id"/></span>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Nature de marchandise</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.nature_marchandise"/></span>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Nombre de contenant</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.nb_contenant"/></span>
+                                        </div>
+                                        <div class="o_pt_field">
+                                            <span class="o_pt_field_label">Poids Brut Total</span>
+                                            <span class="o_pt_field_val"><span t-field="dossier.poids_brut_total"/> kg</span>
+                                        </div>
+                                    </div>
+                                    <div style="padding:6px 12px 10px; font-size:11px; color:#374151; border-top:1px solid #f0f0f0;">
+                                        <span class="o_pt_field_label">Cas hors standard (palette/Colis)</span>
+                                        <span class="o_pt_field_val" style="display:block;"><span t-field="dossier.cas_hors_standard"/></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div><!-- /tab-ouverture -->
+
+                        <!-- ═══ TAB : Factures ═══ -->
+                        <div class="tab-pane fade" id="tab-factures" role="tabpanel">
+
+                            <!-- Calculs agrégés -->
+                            <t t-set="total_lignes" t-value="sum(len(f.line_ids) for f in dossier.facture_ids)"/>
+                            <t t-set="total_poids_net" t-value="sum(f.poids_net_total for f in dossier.facture_ids)"/>
+                            <t t-set="total_poids_brut" t-value="sum(f.poids_brut_total for f in dossier.facture_ids)"/>
+
+                            <!-- ── Stats résumé ── -->
+                            <div class="o_pt_facture_stats">
+                                <div class="o_pt_facture_stat">
+                                    <span class="o_pt_facture_stat_label">Nombre total de lignes de factures</span>
+                                    <span class="o_pt_facture_stat_value"><t t-esc="total_lignes"/></span>
+                                </div>
+                                <div class="o_pt_facture_stat">
+                                    <span class="o_pt_facture_stat_label">Poids net total</span>
+                                    <span class="o_pt_facture_stat_value"><t t-esc="'%.3f' % total_poids_net"/></span>
+                                </div>
+                                <div class="o_pt_facture_stat">
+                                    <span class="o_pt_facture_stat_label">Poids brut total</span>
+                                    <span class="o_pt_facture_stat_value"><t t-esc="'%.3f' % total_poids_brut"/></span>
+                                </div>
+                            </div>
+
+                            <!-- ── Modèle de facture + Import ── -->
+                            <div class="o_pt_facture_form">
+                                <div class="o_pt_facture_form_field">
+                                    <label>Modèle de facture</label>
+                                    <select class="o_pt_field_input" disabled="disabled">
+                                        <option>STANDARD</option>
+                                    </select>
+                                </div>
+                                <div class="o_pt_facture_form_actions">
+                                    <button type="button" class="o_pt_btn_import">
+                                        <i class="fa fa-plus"/> Importer facture
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- ── DUM initiale ── -->
+                            <div class="o_pt_facture_dum">
+                                <div class="o_pt_facture_dum_field">
+                                    <label>DUM initiale</label>
+                                    <span class="o_pt_field_val"><span t-field="dossier.num_dum_initiale"/></span>
+                                </div>
+                                <div class="o_pt_facture_dum_field">
+                                    <label>Devise DUM initiale</label>
+                                    <span class="o_pt_field_val"><span t-field="dossier.currency_id"/></span>
+                                </div>
+                            </div>
+
+                            <!-- ── Toolbar + Table ── -->
+                            <div class="o_pt_facture_table_wrap">
+                                <div class="o_pt_facture_toolbar">
+                                    <div class="o_pt_facture_toolbar_left">
+                                        <button type="button" class="o_pt_toolbar_btn o_pt_toolbar_btn_add" title="Ajouter"><i class="fa fa-plus"/></button>
+                                        <button type="button" class="o_pt_toolbar_btn o_pt_toolbar_btn_edit" title="Modifier"><i class="fa fa-check"/></button>
+                                        <button type="button" class="o_pt_toolbar_btn o_pt_toolbar_btn_del" title="Supprimer"><i class="fa fa-trash"/></button>
+                                        <button type="button" class="o_pt_btn_generer">Générer Facture</button>
+                                    </div>
+                                    <div class="o_pt_facture_toolbar_center">Liste des factures</div>
+                                    <div class="o_pt_facture_toolbar_right">
+                                        <div class="o_pt_toolbar_export">
+                                            Exportation <i class="fa fa-chevron-down"/>
+                                        </div>
+                                        <div class="o_pt_toolbar_cols">
+                                            colonnes sélectionnées <i class="fa fa-bars"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <table class="o_pt_table o_pt_facture_table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:32px;"><input type="checkbox" disabled="disabled"/></th>
+                                            <th>Numéro d'ordre</th>
+                                            <th>Date de facturation</th>
+                                            <th>Numéro de facture</th>
+                                            <th>Fournisseur</th>
+                                            <th>Devise</th>
+                                            <th>Prix total</th>
+                                            <th>Poids net total</th>
+                                            <th>Dossier</th>
+                                            <th>Incoterm</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-if="dossier.facture_ids">
+                                            <t t-foreach="dossier.facture_ids" t-as="f">
+                                                <tr>
+                                                    <td><input type="checkbox" disabled="disabled"/></td>
+                                                    <td><t t-esc="f_index + 1"/></td>
+                                                    <td><span t-field="f.date_facture"/></td>
+                                                    <td><t t-esc="f.num_facture"/></td>
+                                                    <td><span t-field="f.partner_id"/></td>
+                                                    <td><span t-field="f.currency_id"/></td>
+                                                    <td><span t-field="f.valeur_total"/></td>
+                                                    <td><span t-field="f.poids_net_total"/></td>
+                                                    <td><t t-esc="dossier.name"/></td>
+                                                    <td><span t-field="f.incoterm_id"/></td>
+                                                </tr>
+                                            </t>
+                                        </t>
+                                        <t t-else="">
+                                            <tr>
+                                                <td colspan="10" class="o_pt_facture_empty">Aucun enregistrement trouvé.</td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+
+                                <!-- Pagination -->
+                                <div class="o_pt_facture_pagination">
+                                    <span class="o_pt_page_btn">«</span>
+                                    <span class="o_pt_page_btn">‹</span>
+                                    <span class="o_pt_page_btn o_pt_page_active">1</span>
+                                    <span class="o_pt_page_btn">›</span>
+                                    <span class="o_pt_page_btn">»</span>
+                                    <select class="o_pt_page_size">
+                                        <option>10</option>
+                                        <option>25</option>
+                                        <option>50</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- ── Navigation ── -->
+                            <div class="o_pt_facture_nav">
+                                <a class="o_pt_nav_btn o_pt_nav_prev" href="#tab-ouverture" data-bs-toggle="tab">Précédent</a>
+                                <a class="o_pt_nav_btn o_pt_nav_close" href="/my/dossiers">Fermer</a>
+                                <a class="o_pt_nav_btn o_pt_nav_next" href="#tab-ventilation" data-bs-toggle="tab">Suivant</a>
+                            </div>
+
+                        </div>
+
+                        <!-- ═══ TAB : Ventilation ═══ -->
+                        <div class="tab-pane fade" id="tab-ventilation" role="tabpanel">
+                            <div class="o_pt_section">
+                                <div class="o_pt_section_header">
+                                    <span class="o_pt_section_title">Ventilation des charges</span>
+                                </div>
+                                <div class="p-3 text-muted" style="font-size:12px;">Section ventilation — à compléter.</div>
+                            </div>
+                        </div>
+
+                        <!-- ═══ TAB : Signature ═══ -->
+                        <div class="tab-pane fade" id="tab-signature" role="tabpanel">
+                            <div class="o_pt_section">
+                                <div class="o_pt_section_header">
+                                    <span class="o_pt_section_title">Signature</span>
+                                </div>
+                                <div class="p-3 text-muted" style="font-size:12px;">Section signature — à compléter.</div>
+                            </div>
+                        </div>
+
+                        <!-- ═══ TAB : Charges / Débours ═══ -->
+                        <div class="tab-pane fade" id="tab-charges" role="tabpanel">
+                            <div class="o_pt_section">
+                                <div class="o_pt_section_header">
+                                    <span class="o_pt_section_title">Charges / Débours</span>
+                                </div>
+                                <t t-if="not dossier.charge_ids">
+                                    <div class="p-3 text-muted" style="font-size:12px;">Aucune charge liée.</div>
+                                </t>
+                                <t t-if="dossier.charge_ids">
+                                    <table class="o_pt_table">
+                                        <thead>
+                                            <tr>
+                                                <th>Prestataire</th><th>Prestation</th><th>Date</th>
+                                                <th>Réf.</th><th>P.U.</th><th>Qté</th><th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="dossier.charge_ids" t-as="c">
+                                                <tr>
+                                                    <td><span t-field="c.prestataire_id"/></td>
+                                                    <td><span t-field="c.prestation_id"/></td>
+                                                    <td><span t-field="c.date"/></td>
+                                                    <td><t t-esc="c.ref_document"/></td>
+                                                    <td><span t-field="c.prix_unitaire"/></td>
+                                                    <td><span t-field="c.quantite"/></td>
+                                                    <td><span t-field="c.montant_total"/> <span t-field="c.currency_id"/></td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- ═══ TAB : Documents annexés ═══ -->
+                        <div class="tab-pane fade" id="tab-documents-annexes" role="tabpanel">
+                            <div class="o_pt_section">
+                                <div class="o_pt_section_header">
+                                    <span class="o_pt_section_title">Documents Annexés</span>
+                                </div>
+                                <t t-if="not dossier.document_ids">
+                                    <div class="p-3 text-muted" style="font-size:12px;">Aucun document lié.</div>
+                                </t>
+                                <t t-if="dossier.document_ids">
+                                    <table class="o_pt_table">
+                                        <thead>
+                                            <tr>
+                                                <th>Nom</th><th>Type</th>
+                                                <th>Date réception</th><th>Date annexation</th><th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="dossier.document_ids" t-as="doc">
+                                                <tr>
+                                                    <td><t t-esc="doc.nom_document"/></td>
+                                                    <td><t t-esc="doc.type_annexe"/></td>
+                                                    <td><span t-field="doc.date_reception"/></td>
+                                                    <td><span t-field="doc.date_annexation"/></td>
+                                                    <td>
+                                                        <a t-if="doc.attachment_id"
+                                                           t-attf-href="/web/content/#{doc.attachment_id.id}?download=true"
+                                                           class="o_pt_action_btn">
+                                                            <i class="fa fa-download me-1"/> Télécharger
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- ═══ TAB : Circuit dossier ═══ -->
+                        <div class="tab-pane fade" id="tab-circuit" role="tabpanel">
+                            <div class="o_pt_section">
+                                <div class="o_pt_section_header">
+                                    <span class="o_pt_section_title">Circuit Dossier</span>
+                                </div>
+                                <t t-if="not dossier.circuit_ids">
+                                    <div class="p-3 text-muted" style="font-size:12px;">Aucune tâche de circuit.</div>
+                                </t>
+                                <t t-if="dossier.circuit_ids">
+                                    <table class="o_pt_table">
+                                        <thead>
+                                            <tr>
+                                                <th>Tâche</th><th>De</th><th>À</th>
+                                                <th>Priorité</th><th>Statut</th>
+                                                <th>Date création</th><th>Date clôture</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="dossier.circuit_ids" t-as="task">
+                                                <tr>
+                                                    <td><t t-esc="task.intitule_tache"/></td>
+                                                    <td><t t-esc="task.service_demandeur"/></td>
+                                                    <td><t t-esc="task.service_destinataire"/></td>
+                                                    <td><span t-field="task.priorite_id"/></td>
+                                                    <td>
+                                                        <span t-attf-class="o_pt_badge o_pt_badge_#{task.statut}">
+                                                            <t t-esc="dict(task._fields['statut'].selection).get(task.statut, '')"/>
+                                                        </span>
+                                                    </td>
+                                                    <td><span t-field="task.date_creation" t-options='{"widget":"datetime"}'/></td>
+                                                    <td><span t-field="task.date_cloture" t-options='{"widget":"datetime"}'/></td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </t>
+                            </div>
+                        </div>
+
+                    </div><!-- /tab-content -->
+                </div><!-- /main -->
+
+                <!-- Sidebar droite : Prestations réalisées + Circuit -->
+                <div class="o_pt_sidebar_right">
+                    <div class="o_pt_sidebar_title">Prestations réalisées</div>
+                    <t t-if="dossier.charge_ids">
+                        <t t-foreach="dossier.charge_ids" t-as="c">
+                            <div class="o_pt_sidebar_item">
+                                <i class="fa fa-check-circle me-1" style="color:#198754;font-size:10px;"/>
+                                <span t-field="c.prestation_id"/>
+                            </div>
+                        </t>
+                    </t>
+                    <t t-else="">
+                        <span class="o_pt_sidebar_item" style="color:#9ca3af;">—</span>
+                    </t>
+
+                    <div class="o_pt_sidebar_title" style="margin-top:12px;">Circuit dossier<br/>(Mes tâches)</div>
+                    <t t-if="dossier.circuit_ids">
+                        <t t-foreach="dossier.circuit_ids" t-as="task">
+                            <div class="o_pt_circuit_item">
+                                <div t-attf-class="o_pt_circuit_dot #{task.statut}"/>
+                                <div>
+                                    <div style="font-size:11px;font-weight:500;color:#1f2937;"><t t-esc="task.intitule_tache"/></div>
+                                    <div style="font-size:10px;color:#6b7280;">
+                                        <t t-esc="dict(task._fields['statut'].selection).get(task.statut, '')"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </t>
+                    <t t-else="">
+                        <span class="o_pt_sidebar_item" style="color:#9ca3af;">—</span>
+                    </t>
+                </div>
+
+            </div><!-- /layout -->
+        </div><!-- /page -->
+    </t>
+</template>
+
+<!-- ══ FORMULAIRE NOUVEAU DOSSIER ════════════════════════════════════════ -->
+<template id="portal_dossier_new" name="Nouveau Dossier Transit">
+    <t t-call="portal.portal_layout">
+        <div class="o_pt_page">
+            <form action="/my/dossiers/new" method="post" style="margin:0;">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                <!-- ══ ENTÊTE 4 COLONNES — même structure que le détail ══ -->
+                <div class="o_pt_meta_bar o_pt_fullwidth">
+                    <div class="o_pt_meta_grid">
+
+                        <!-- ── Colonne 1 ── -->
+                        <div class="o_pt_meta_col">
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">N° Dossier / Date&amp;heure Création</span>
+                                <span class="o_pt_meta_value" style="color:#9ca3af;font-style:italic;">Généré automatiquement</span>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Soumissionnaire</span>
+                                <span class="o_pt_meta_value" style="color:#374151;"><t t-esc="request.env.user.partner_id.name"/></span>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Client de facturation</span>
+                                <input class="o_pt_meta_input" type="text" name="client_facturation" t-att-value="values.get('client_facturation','')"/>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Date de réception (Demande de service)</span>
+                                <input class="o_pt_meta_input" type="datetime-local" name="date_reception_demande" t-att-value="values.get('date_reception_demande','')"/>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Annexe (Demande de service)</span>
+                                <input class="o_pt_meta_input" type="text" name="annexe_demande" t-att-value="values.get('annexe_demande','')"/>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Date ETD/ETA <span class="o_pt_required">*</span></span>
+                                <input class="o_pt_meta_input" type="datetime-local" name="date_etd_eta"
+                                       t-att-value="values.get('date_etd_eta','')"
+                                       t-attf-style="#{' border-bottom-color:#dc3545;' if error.get('date_etd_eta') else ''}"/>
+                                <span t-if="error.get('date_etd_eta')" class="o_pt_error_msg"><t t-esc="error.get('date_etd_eta')"/></span>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Date de réception (dernier élément déclaratif reçu)</span>
+                                <input class="o_pt_meta_input" type="datetime-local" name="date_reception_dernier_element" t-att-value="values.get('date_reception_dernier_element','')"/>
+                            </div>
+                        </div>
+
+                        <!-- ── Colonne 2 ── -->
+                        <div class="o_pt_meta_col">
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Catégorie</span>
+                                <select class="o_pt_meta_input" name="categorie">
+                                    <option value=""></option>
+                                    <option value="perissable" t-att-selected="values.get('categorie')=='perissable'">Périssable</option>
+                                    <option value="industrie"  t-att-selected="values.get('categorie')=='industrie'">Industrie</option>
+                                    <option value="consignation" t-att-selected="values.get('categorie')=='consignation'">Consignation</option>
+                                    <option value="transport"  t-att-selected="values.get('categorie')=='transport'">Transport</option>
+                                </select>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Dum initiale</span>
+                                <input class="o_pt_meta_input" type="text" name="num_dum_initiale" t-att-value="values.get('num_dum_initiale','')"/>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Date Dum Début / Date Dum fin</span>
+                                <div style="display:flex;gap:4px;">
+                                    <input class="o_pt_meta_input" type="datetime-local" name="date_debut_dum" t-att-value="values.get('date_debut_dum','')" style="flex:1;"/>
+                                    <input class="o_pt_meta_input" type="datetime-local" name="date_fin_dum"   t-att-value="values.get('date_fin_dum','')"   style="flex:1;"/>
+                                </div>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Bureau de dédouanement</span>
+                                <select class="o_pt_meta_input" name="bureau_dedouanement_id">
+                                    <option value=""></option>
+                                    <t t-foreach="bureaux" t-as="b">
+                                        <option t-att-value="b.id" t-att-selected="values.get('bureau_dedouanement_id')==str(b.id)"><t t-esc="b.code"/> — <t t-esc="b.name"/></option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Arrondissement de dédouanement</span>
+                                <select class="o_pt_meta_input" name="arrondissement_id">
+                                    <option value=""></option>
+                                    <t t-foreach="arrondissements" t-as="a">
+                                        <option t-att-value="a.id" t-att-selected="values.get('arrondissement_id')==str(a.id)"><t t-esc="a.name"/></option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Lieu de stockage de dédouanement</span>
+                                <select class="o_pt_meta_input" name="lieu_stockage_id">
+                                    <option value=""></option>
+                                    <t t-foreach="lieux_stockage" t-as="ls">
+                                        <option t-att-value="ls.id" t-att-selected="values.get('lieu_stockage_id')==str(ls.id)"><t t-esc="ls.name"/></option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Conditions de livraison /Incoterm</span>
+                                <select class="o_pt_meta_input" name="incoterm_id">
+                                    <option value=""></option>
+                                    <t t-foreach="incoterms" t-as="inc">
+                                        <option t-att-value="inc.id" t-att-selected="values.get('incoterm_id')==str(inc.id)"><t t-esc="inc.code"/> — <t t-esc="inc.name"/></option>
+                                    </t>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- ── Colonne 3 ── -->
+                        <div class="o_pt_meta_col">
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Type dossier (Import / Export / Cession / Intervention) <span class="o_pt_required">*</span></span>
+                                <select class="o_pt_meta_input" name="type_dossier"
+                                        t-attf-style="#{' border-bottom-color:#dc3545;' if error.get('type_dossier') else ''}">
+                                    <option value=""></option>
+                                    <option value="import"       t-att-selected="values.get('type_dossier')=='import'">Import</option>
+                                    <option value="export"       t-att-selected="values.get('type_dossier')=='export'">Export</option>
+                                    <option value="cession"      t-att-selected="values.get('type_dossier')=='cession'">Cession</option>
+                                    <option value="intervention" t-att-selected="values.get('type_dossier')=='intervention'">Intervention</option>
+                                </select>
+                                <span t-if="error.get('type_dossier')" class="o_pt_error_msg"><t t-esc="error.get('type_dossier')"/></span>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Dum Définitive / Sous-Dum</span>
+                                <input class="o_pt_meta_input" type="text" name="num_dum_definitive" t-att-value="values.get('num_dum_definitive','')"/>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Régime douanier</span>
+                                <select class="o_pt_meta_input" name="regime_id">
+                                    <option value=""></option>
+                                    <t t-foreach="regimes" t-as="r">
+                                        <option t-att-value="r.id" t-att-selected="values.get('regime_id')==str(r.id)"><t t-esc="r.code"/> — <t t-esc="r.name"/></option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Bureau de destination</span>
+                                <select class="o_pt_meta_input" name="bureau_destination_id">
+                                    <option value=""></option>
+                                    <t t-foreach="bureaux" t-as="b">
+                                        <option t-att-value="b.id" t-att-selected="values.get('bureau_destination_id')==str(b.id)"><t t-esc="b.code"/> — <t t-esc="b.name"/></option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Lieu de stockage de destination</span>
+                                <select class="o_pt_meta_input" name="lieu_stockage_dest_id">
+                                    <option value=""></option>
+                                    <t t-foreach="lieux_stockage" t-as="ls">
+                                        <option t-att-value="ls.id" t-att-selected="values.get('lieu_stockage_dest_id')==str(ls.id)"><t t-esc="ls.name"/></option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Devise</span>
+                                <input class="o_pt_meta_input" type="text" name="devise" t-att-value="values.get('devise','')"/>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Matricule</span>
+                                <input class="o_pt_meta_input" type="text" name="matricule" t-att-value="values.get('matricule','')"/>
+                            </div>
+                        </div>
+
+                        <!-- ── Colonne 4 ── -->
+                        <div class="o_pt_meta_col">
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Priorité  |  Sélectivité</span>
+                                <div style="display:flex;gap:4px;">
+                                    <select class="o_pt_meta_input" name="priorite_id" style="flex:1;">
+                                        <option value=""></option>
+                                        <t t-foreach="priorites" t-as="p">
+                                            <option t-att-value="p.id" t-att-selected="values.get('priorite_id')==str(p.id)"><t t-esc="p.name"/></option>
+                                        </t>
+                                    </select>
+                                    <select class="o_pt_meta_input" name="selectivite" style="flex:1;">
+                                        <option value=""></option>
+                                        <option value="vert"   t-att-selected="values.get('selectivite')=='vert'">Vert</option>
+                                        <option value="orange" t-att-selected="values.get('selectivite')=='orange'">Orange</option>
+                                        <option value="rouge"  t-att-selected="values.get('selectivite')=='rouge'">Rouge</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Nature de marchandise</span>
+                                <input class="o_pt_meta_input" type="text" name="nature_marchandise" t-att-value="values.get('nature_marchandise','')"/>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Type de contenant : Palette / Nombre de contenant</span>
+                                <div style="display:flex;gap:4px;">
+                                    <input class="o_pt_meta_input" type="text"   name="type_contenant_palette" t-att-value="values.get('type_contenant_palette','')" placeholder="Type" style="flex:2;"/>
+                                    <input class="o_pt_meta_input" type="number" name="nb_contenant_palette"   t-att-value="values.get('nb_contenant_palette','')"   placeholder="Nb"   style="flex:1;"/>
+                                </div>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Type de contenant : Colis / Nombre de contenant <span class="o_pt_required">*</span></span>
+                                <div style="display:flex;gap:4px;">
+                                    <input class="o_pt_meta_input" type="text"   name="type_contenant_colis" t-att-value="values.get('type_contenant_colis','')"
+                                           t-attf-style="flex:2;#{' border-bottom-color:#dc3545;' if error.get('type_contenant_colis') else ''}"/>
+                                    <input class="o_pt_meta_input" type="number" name="nb_contenant_colis"   t-att-value="values.get('nb_contenant_colis','')"
+                                           t-attf-style="flex:1;#{' border-bottom-color:#dc3545;' if error.get('nb_contenant_colis') else ''}"/>
+                                </div>
+                                <span t-if="error.get('type_contenant_colis') or error.get('nb_contenant_colis')" class="o_pt_error_msg">Champ obligatoire</span>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Poids brut Total</span>
+                                <input class="o_pt_meta_input" type="number" step="0.01" name="poids_brut_total" t-att-value="values.get('poids_brut_total','')"/>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Référence client</span>
+                                <input class="o_pt_meta_input" type="text" name="reference_client" t-att-value="values.get('reference_client','')"/>
+                            </div>
+                            <div class="o_pt_meta_item">
+                                <span class="o_pt_meta_label">Groupage (Oui/ Non) – Liste des cas</span>
+                                <select class="o_pt_meta_input" name="groupage">
+                                    <option value="">Non</option>
+                                    <option value="1" t-att-selected="values.get('groupage')">Oui</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ══ Tabs bar ══ -->
+                <div class="o_pt_tabs_bar" style="width:100vw;position:relative;left:50%;transform:translateX(-50%);box-sizing:border-box;">
+                    <ul class="o_pt_tabs" role="tablist">
+                        <li role="presentation">
+                            <a class="o_pt_tab active" data-bs-toggle="tab" href="#tab-new-ouverture" role="tab">Ouverture dossier</a>
+                        </li>
+                        <li role="presentation">
+                            <a class="o_pt_tab" data-bs-toggle="tab" href="#tab-new-factures" role="tab">Factures</a>
+                        </li>
+                        <li role="presentation">
+                            <a class="o_pt_tab" data-bs-toggle="tab" href="#tab-new-debours" role="tab">Charges / Débours</a>
+                        </li>
+                        <li role="presentation">
+                            <a class="o_pt_tab" data-bs-toggle="tab" href="#tab-new-ventilation" role="tab">Ventilation</a>
+                        </li>
+                        <li role="presentation">
+                            <a class="o_pt_tab" data-bs-toggle="tab" href="#tab-new-signature" role="tab">Signature</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- ══ Layout 3 colonnes — toujours visible ══ -->
+                <div class="o_pt_layout o_pt_fullwidth">
+
+                    <!-- ── Sidebar gauche : Documents annexés ── -->
+                    <div class="o_pt_sidebar_left">
+                        <div class="o_pt_sidebar_title">Documents annexés</div>
+                        <div class="o_pt_sidebar_btn">Bouton d'annexation / Affiches des annexes</div>
+                    </div>
+
+                    <!-- ── Contenu principal ── -->
+                    <div class="o_pt_main">
+                        <div class="tab-content">
+                        <div class="tab-pane fade show active" id="tab-new-ouverture" role="tabpanel">
+
+                        <!-- Section : Déclaration des anomalies / Transport -->
+                        <div class="o_pt_section">
+                            <div class="o_pt_section_header" style="justify-content:center;position:relative;">
+                                <span class="o_pt_section_title" style="flex:1;text-align:center;">Déclaration des anomalies*</span>
+                                <button type="button" class="o_pt_section_btn" style="position:absolute;right:8px;">Bouton</button>
+                            </div>
+                            <div class="o_pt_field_grid cols-4">
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Mode de transport</span>
+                                    <select class="o_pt_field_input" name="mode_transport_id">
+                                        <option value=""></option>
+                                        <t t-foreach="modes_transport" t-as="m">
+                                            <option t-att-value="m.id" t-att-selected="values.get('mode_transport_id')==str(m.id)"><t t-esc="m.name"/></option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Type de transport</span>
+                                    <input class="o_pt_field_input" type="text" name="type_transport" t-att-value="values.get('type_transport','')"/>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Date &amp; heure de voyage**</span>
+                                    <input class="o_pt_field_input" type="datetime-local" name="date_voyage" t-att-value="values.get('date_voyage','')"/>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Transporteur</span>
+                                    <input class="o_pt_field_input" type="text" name="transporteur_nom" t-att-value="values.get('transporteur_nom','')"/>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Nombre de transport</span>
+                                    <input class="o_pt_field_input" type="number" name="nb_transport" t-att-value="values.get('nb_transport','')"/>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Marque/Réf. Transport</span>
+                                    <input class="o_pt_field_input" type="text" name="marque_ref_transport" t-att-value="values.get('marque_ref_transport','')"/>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Date de présentation du moyen***</span>
+                                    <input class="o_pt_field_input" type="datetime-local" name="date_presentation" t-att-value="values.get('date_presentation','')"/>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">&#160;</span>
+                                    <span class="o_pt_field_empty"/>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Terminal</span>
+                                    <select class="o_pt_field_input" name="terminal_id">
+                                        <option value=""></option>
+                                        <t t-foreach="contenants" t-as="t_item">
+                                            <option t-att-value="t_item.id"><t t-esc="t_item.name"/></option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Sous type d'unité</span>
+                                    <input class="o_pt_field_input" type="text" name="sous_type_unite" t-att-value="values.get('sous_type_unite','')"/>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Pays de provenance</span>
+                                    <select class="o_pt_field_input" name="pays_provenance_id">
+                                        <option value=""></option>
+                                        <t t-foreach="pays" t-as="p">
+                                            <option t-att-value="p.id" t-att-selected="values.get('pays_provenance_id')==str(p.id)"><t t-esc="p.name"/></option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Pays d'origine</span>
+                                    <select class="o_pt_field_input" name="pays_origine_id">
+                                        <option value=""></option>
+                                        <t t-foreach="pays" t-as="p">
+                                            <option t-att-value="p.id" t-att-selected="values.get('pays_origine_id')==str(p.id)"><t t-esc="p.name"/></option>
+                                        </t>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section : Scellés -->
+                        <div class="o_pt_section">
+                            <div class="o_pt_field_grid cols-4">
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Propriétaire des scellés</span>
+                                    <input class="o_pt_field_input" type="text" name="proprietaire_scelles" t-att-value="values.get('proprietaire_scelles','')"/>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">PT/Transporteur/ Autres</span>
+                                    <input class="o_pt_field_input" type="text" name="pt_transporteur_autres" t-att-value="values.get('pt_transporteur_autres','')"/>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Centre RC / N°RC</span>
+                                    <input class="o_pt_field_input" type="text" name="centre_rc" t-att-value="values.get('centre_rc','')"/>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">N° Série des scellés</span>
+                                    <input class="o_pt_field_input" type="text" name="num_serie_scelles" t-att-value="values.get('num_serie_scelles','')"/>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Nombre des scellés</span>
+                                    <input class="o_pt_field_input" type="number" name="nb_scelles" t-att-value="values.get('nb_scelles','')"/>
+                                </div>
+                                <div class="o_pt_field"><span class="o_pt_field_empty"/></div>
+                                <div class="o_pt_field"><span class="o_pt_field_empty"/></div>
+                                <div class="o_pt_field"><span class="o_pt_field_empty"/></div>
+                            </div>
+                        </div>
+
+                        <!-- Section : DS -->
+                        <div class="o_pt_section">
+                            <div class="o_pt_field_grid cols-4">
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Type DS</span>
+                                    <input class="o_pt_field_input" type="text" name="type_ds" t-att-value="values.get('type_ds','')"/>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Référence DS</span>
+                                    <input class="o_pt_field_input" type="text" name="ref_ds" t-att-value="values.get('ref_ds','')"/>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Lieu de chargement</span>
+                                    <input class="o_pt_field_input" type="text" name="lieu_chargement" t-att-value="values.get('lieu_chargement','')"/>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Référence du Lot</span>
+                                    <input class="o_pt_field_input" type="text" name="num_lot" t-att-value="values.get('num_lot','')"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section : Expéditeur / Destinataire -->
+                        <div class="o_pt_section">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;border:none;">
+                                <div style="padding:10px 12px;border-right:1px solid #e0e0e0;">
+                                    <div class="o_pt_subsection_title">Expéditeur</div>
+                                    <div class="o_pt_field" style="border-right:none;">
+                                        <span class="o_pt_field_label">Adresse</span>
+                                        <input class="o_pt_field_input" type="text" name="expediteur_adresse" t-att-value="values.get('expediteur_adresse','')"/>
+                                    </div>
+                                    <div class="o_pt_field" style="border-right:none;">
+                                        <span class="o_pt_field_label">Ville</span>
+                                        <input class="o_pt_field_input" type="text" name="expediteur_ville" t-att-value="values.get('expediteur_ville','')"/>
+                                    </div>
+                                    <div class="o_pt_field" style="border-right:none;">
+                                        <span class="o_pt_field_label">Pays</span>
+                                        <input class="o_pt_field_input" type="text" name="expediteur_pays_text" t-att-value="values.get('expediteur_pays_text','')"/>
+                                    </div>
+                                    <div class="o_pt_field" style="border-right:none;border-bottom:none;">
+                                        <span class="o_pt_field_label">De</span>
+                                        <input class="o_pt_field_input" type="text" name="port_depart" t-att-value="values.get('port_depart','')"/>
+                                    </div>
+                                </div>
+                                <div style="padding:10px 12px;">
+                                    <div class="o_pt_subsection_title">Destinataire</div>
+                                    <div class="o_pt_field" style="border-right:none;">
+                                        <span class="o_pt_field_label">Adresse</span>
+                                        <input class="o_pt_field_input" type="text" name="destinataire_adresse" t-att-value="values.get('destinataire_adresse','')"/>
+                                    </div>
+                                    <div class="o_pt_field" style="border-right:none;">
+                                        <span class="o_pt_field_label">Ville</span>
+                                        <input class="o_pt_field_input" type="text" name="destinataire_ville" t-att-value="values.get('destinataire_ville','')"/>
+                                    </div>
+                                    <div class="o_pt_field" style="border-right:none;">
+                                        <span class="o_pt_field_label">Pays</span>
+                                        <input class="o_pt_field_input" type="text" name="destinataire_pays_text" t-att-value="values.get('destinataire_pays_text','')"/>
+                                    </div>
+                                    <div class="o_pt_field" style="border-right:none;border-bottom:none;">
+                                        <span class="o_pt_field_label">À</span>
+                                        <input class="o_pt_field_input" type="text" name="port_arrivee" t-att-value="values.get('port_arrivee','')"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section : Marchandise -->
+                        <div class="o_pt_section">
+                            <div class="o_pt_field_grid cols-4">
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Type de contenant :</span>
+                                    <select class="o_pt_field_input" name="contenant_id">
+                                        <option value=""></option>
+                                        <t t-foreach="contenants" t-as="c">
+                                            <option t-att-value="c.id" t-att-selected="values.get('contenant_id')==str(c.id)"><t t-esc="c.name"/></option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Nature de marchandise</span>
+                                    <input class="o_pt_field_input" type="text" name="nature_marchandise" t-att-value="values.get('nature_marchandise','')"/>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Nombre de contenant</span>
+                                    <input class="o_pt_field_input" type="number" name="nb_contenant" t-att-value="values.get('nb_contenant','')"/>
+                                </div>
+                                <div class="o_pt_field">
+                                    <span class="o_pt_field_label">Poids Brut Total</span>
+                                    <input class="o_pt_field_input" type="number" step="0.01" name="poids_brut_total" t-att-value="values.get('poids_brut_total','')"/>
+                                </div>
+                            </div>
+                            <div style="padding:6px 12px 10px;border-top:1px solid #f0f0f0;">
+                                <span class="o_pt_field_label">Cas hors standard (palette/Colis)</span>
+                                <input class="o_pt_field_input" type="text" name="cas_hors_standard" t-att-value="values.get('cas_hors_standard','')"/>
+                            </div>
+                        </div>
+
+                        <!-- ══ Boutons action ══ -->
+                        <div class="o_pt_form_actions" style="border-top:1px solid #d4d4d4;background:#f9fafb;padding:10px 20px;">
+                            <a href="/my/dossiers" class="o_pt_btn_cancel">Annuler</a>
+                            <button type="submit" class="o_pt_btn_submit">
+                                <i class="fa fa-save me-1"/> Soumettre le Dossier
+                            </button>
+                        </div>
+
+                        </div><!-- /tab-new-ouverture -->
+
+                <!-- TAB Factures -->
+                <div class="tab-pane fade" id="tab-new-factures" role="tabpanel" style="padding:14px;">
+                    <div class="o_pt_facture_stats">
+                        <div class="o_pt_facture_stat">
+                            <span class="o_pt_facture_stat_label">Nombre total de lignes de factures</span>
+                            <span class="o_pt_facture_stat_value">0</span>
+                        </div>
+                        <div class="o_pt_facture_stat">
+                            <span class="o_pt_facture_stat_label">Poids net total</span>
+                            <span class="o_pt_facture_stat_value">0.000</span>
+                        </div>
+                        <div class="o_pt_facture_stat">
+                            <span class="o_pt_facture_stat_label">Poids brut total</span>
+                            <span class="o_pt_facture_stat_value">0.000</span>
+                        </div>
+                    </div>
+                    <div class="o_pt_facture_table_wrap" style="margin-top:14px;">
+                        <div class="o_pt_facture_toolbar">
+                            <div class="o_pt_facture_toolbar_left">
+                                <button type="button" class="o_pt_toolbar_btn o_pt_toolbar_btn_add"><i class="fa fa-plus"/></button>
+                                <button type="button" class="o_pt_toolbar_btn o_pt_toolbar_btn_edit"><i class="fa fa-check"/></button>
+                                <button type="button" class="o_pt_toolbar_btn o_pt_toolbar_btn_del"><i class="fa fa-trash"/></button>
+                                <button type="button" class="o_pt_btn_generer">Générer Facture</button>
+                            </div>
+                            <div class="o_pt_facture_toolbar_center">Liste des factures</div>
+                            <div class="o_pt_facture_toolbar_right">
+                                <div class="o_pt_toolbar_export">Exportation <i class="fa fa-chevron-down"/></div>
+                                <div class="o_pt_toolbar_cols">colonnes sélectionnées <i class="fa fa-bars"/></div>
+                            </div>
+                        </div>
+                        <table class="o_pt_table">
+                            <thead>
+                                <tr>
+                                    <th style="width:32px;"><input type="checkbox" disabled="disabled"/></th>
+                                    <th>Numéro d'ordre</th>
+                                    <th>Date de facturation</th>
+                                    <th>Numéro de facture</th>
+                                    <th>Fournisseur</th>
+                                    <th>Devise</th>
+                                    <th>Prix total</th>
+                                    <th>Poids net total</th>
+                                    <th>Dossier</th>
+                                    <th>Incoterm</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="10" class="o_pt_facture_empty">Aucun enregistrement trouvé.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="o_pt_facture_pagination">
+                            <span class="o_pt_page_btn">«</span>
+                            <span class="o_pt_page_btn">‹</span>
+                            <span class="o_pt_page_btn o_pt_page_active">1</span>
+                            <span class="o_pt_page_btn">›</span>
+                            <span class="o_pt_page_btn">»</span>
+                            <select class="o_pt_page_size"><option>10</option><option>25</option><option>50</option></select>
+                        </div>
+                    </div>
+                    <div class="o_pt_facture_nav">
+                        <a class="o_pt_nav_btn o_pt_nav_prev" data-bs-toggle="tab" href="#tab-new-ouverture">Précédent</a>
+                        <a class="o_pt_nav_btn o_pt_nav_close" href="/my/dossiers">Fermer</a>
+                        <a class="o_pt_nav_btn o_pt_nav_next" data-bs-toggle="tab" href="#tab-new-ventilation">Suivant</a>
+                    </div>
+                </div><!-- /tab-new-factures -->
+
+                <!-- TAB Charges / Débours -->
+                <div class="tab-pane fade" id="tab-new-debours" role="tabpanel" style="padding:14px;">
+                    <div class="o_pt_facture_table_wrap" style="margin-top:0;">
+                        <div class="o_pt_facture_toolbar">
+                            <div class="o_pt_facture_toolbar_left">
+                                <button type="button" class="o_pt_toolbar_btn o_pt_toolbar_btn_add"><i class="fa fa-plus"/></button>
+                                <button type="button" class="o_pt_toolbar_btn o_pt_toolbar_btn_edit"><i class="fa fa-check"/></button>
+                                <button type="button" class="o_pt_toolbar_btn o_pt_toolbar_btn_del"><i class="fa fa-trash"/></button>
+                            </div>
+                            <div class="o_pt_facture_toolbar_center">Liste des charges / débours</div>
+                            <div class="o_pt_facture_toolbar_right">
+                                <div class="o_pt_toolbar_export">Exportation <i class="fa fa-chevron-down"/></div>
+                                <div class="o_pt_toolbar_cols">colonnes sélectionnées <i class="fa fa-bars"/></div>
+                            </div>
+                        </div>
+                        <table class="o_pt_table">
+                            <thead>
+                                <tr>
+                                    <th style="width:32px;"><input type="checkbox" disabled="disabled"/></th>
+                                    <th>Prestataire</th>
+                                    <th>Prestation</th>
+                                    <th>Date</th>
+                                    <th>Réf. document</th>
+                                    <th>P.U.</th>
+                                    <th>Qté</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="8" class="o_pt_facture_empty">Aucun enregistrement trouvé.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="o_pt_facture_pagination">
+                            <span class="o_pt_page_btn">«</span>
+                            <span class="o_pt_page_btn">‹</span>
+                            <span class="o_pt_page_btn o_pt_page_active">1</span>
+                            <span class="o_pt_page_btn">›</span>
+                            <span class="o_pt_page_btn">»</span>
+                            <select class="o_pt_page_size"><option>10</option><option>25</option><option>50</option></select>
+                        </div>
+                    </div>
+                    <div class="o_pt_facture_nav">
+                        <a class="o_pt_nav_btn o_pt_nav_prev" data-bs-toggle="tab" href="#tab-new-factures">Précédent</a>
+                        <a class="o_pt_nav_btn o_pt_nav_close" href="/my/dossiers">Fermer</a>
+                        <a class="o_pt_nav_btn o_pt_nav_next" data-bs-toggle="tab" href="#tab-new-ventilation">Suivant</a>
+                    </div>
+                </div><!-- /tab-new-debours -->
+
+                <!-- TAB Ventilation -->
+                <div class="tab-pane fade" id="tab-new-ventilation" role="tabpanel" style="padding:14px;">
+                    <div class="o_pt_section">
+                        <div class="o_pt_section_header"><span class="o_pt_section_title">Ventilation des charges</span></div>
+                        <div class="p-3 text-muted" style="font-size:12px;">Section ventilation — à compléter.</div>
+                    </div>
+                    <div class="o_pt_facture_nav">
+                        <a class="o_pt_nav_btn o_pt_nav_prev" data-bs-toggle="tab" href="#tab-new-factures">Précédent</a>
+                        <a class="o_pt_nav_btn o_pt_nav_close" href="/my/dossiers">Fermer</a>
+                        <a class="o_pt_nav_btn o_pt_nav_next" data-bs-toggle="tab" href="#tab-new-signature">Suivant</a>
+                    </div>
+                </div><!-- /tab-new-ventilation -->
+
+                <!-- TAB Signature -->
+                <div class="tab-pane fade" id="tab-new-signature" role="tabpanel" style="padding:14px;">
+                    <div class="o_pt_section">
+                        <div class="o_pt_section_header"><span class="o_pt_section_title">Signature</span></div>
+                        <div class="p-3 text-muted" style="font-size:12px;">Section signature — à compléter.</div>
+                    </div>
+                    <div class="o_pt_facture_nav">
+                        <a class="o_pt_nav_btn o_pt_nav_prev" data-bs-toggle="tab" href="#tab-new-ventilation">Précédent</a>
+                        <a class="o_pt_nav_btn o_pt_nav_close" href="/my/dossiers">Fermer</a>
+                    </div>
+                </div><!-- /tab-new-signature -->
+
+                        </div><!-- /tab-content -->
+                    </div><!-- /main -->
+
+                    <!-- ── Sidebar droite ── -->
+                    <div class="o_pt_sidebar_right">
+                        <div class="o_pt_sidebar_title">Prestations réalisées</div>
+                        <div class="o_pt_sidebar_item">TR (heures supplémentaires)</div>
+                        <div class="o_pt_sidebar_item">Engagement d'importation</div>
+                        <div class="o_pt_sidebar_item">Autorisations douanières</div>
+                        <div class="o_pt_sidebar_item">Classification tarifaire des articles</div>
+                        <div class="o_pt_sidebar_item">création de bulletin d'entrée / Sortie</div>
+                        <div class="o_pt_sidebar_title" style="margin-top:8px;">Circuit dossier (Mes tâches)</div>
+                    </div>
+
+                </div><!-- /layout -->
+
+            </form>
+        </div>
+    </t>
+</template>
+
+</odoo>

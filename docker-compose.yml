@@ -1,0 +1,66 @@
+services:
+
+  odoo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: puerto_transit:latest
+    container_name: puerto_odoo
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8069:8069"
+    volumes:
+      - ./docker/config/odoo.conf:/etc/odoo/odoo.conf:ro
+      - ./docker/filestore:/var/lib/odoo
+      - .:/mnt/extra-addons/puerto_transit
+    environment:
+      - HOST=postgres
+      - USER=odoo
+      - PASSWORD=odoo
+    command: odoo -d puerto_db -i puerto_transit --dev=all
+    networks:
+      - puerto_net
+
+  postgres:
+    image: postgres:15
+    container_name: puerto_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - puerto_net
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: puerto_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - "8070:80"
+    depends_on:
+      - postgres
+    networks:
+      - puerto_net
+
+volumes:
+  postgres_data:
+
+networks:
+  puerto_net:
+    driver: bridge

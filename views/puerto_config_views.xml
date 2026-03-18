@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ══ RÉGIME ══════════════════════════════════════════════════════════ -->
+    <record id="view_puerto_regime_form" model="ir.ui.view">
+        <field name="name">puerto.regime.form</field>
+        <field name="model">puerto.regime</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="type"/>
+                        </group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_puerto_regime_tree" model="ir.ui.view">
+        <field name="name">puerto.regime.tree</field>
+        <field name="model">puerto.regime</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="type"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_puerto_regime" model="ir.actions.act_window">
+        <field name="name">Régimes Douaniers</field>
+        <field name="res_model">puerto.regime</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ══ BUREAU ══════════════════════════════════════════════════════════ -->
+    <record id="view_puerto_bureau_form" model="ir.ui.view">
+        <field name="name">puerto.bureau.form</field>
+        <field name="model">puerto.bureau</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="type"/>
+                        </group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_puerto_bureau_tree" model="ir.ui.view">
+        <field name="name">puerto.bureau.tree</field>
+        <field name="model">puerto.bureau</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="type"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_puerto_bureau" model="ir.actions.act_window">
+        <field name="name">Bureaux Douaniers</field>
+        <field name="res_model">puerto.bureau</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ══ ARRONDISSEMENT ═══════════════════════════════════════════════════ -->
+    <record id="view_puerto_arrondissement_form" model="ir.ui.view">
+        <field name="name">puerto.arrondissement.form</field>
+        <field name="model">puerto.arrondissement</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_puerto_arrondissement_tree" model="ir.ui.view">
+        <field name="name">puerto.arrondissement.tree</field>
+        <field name="model">puerto.arrondissement</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_puerto_arrondissement" model="ir.actions.act_window">
+        <field name="name">Arrondissements</field>
+        <field name="res_model">puerto.arrondissement</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ══ LIEU STOCKAGE ════════════════════════════════════════════════════ -->
+    <record id="view_puerto_lieu_stockage_form" model="ir.ui.view">
+        <field name="name">puerto.lieu.stockage.form</field>
+        <field name="model">puerto.lieu.stockage</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_puerto_lieu_stockage_tree" model="ir.ui.view">
+        <field name="name">puerto.lieu.stockage.tree</field>
+        <field name="model">puerto.lieu.stockage</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_puerto_lieu_stockage" model="ir.actions.act_window">
+        <field name="name">Lieux de Stockage</field>
+        <field name="res_model">puerto.lieu.stockage</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ══ TERMINAL ═════════════════════════════════════════════════════════ -->
+    <record id="view_puerto_terminal_form" model="ir.ui.view">
+        <field name="name">puerto.terminal.form</field>
+        <field name="model">puerto.terminal</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_puerto_terminal_tree" model="ir.ui.view">
+        <field name="name">puerto.terminal.tree</field>
+        <field name="model">puerto.terminal</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_puerto_terminal" model="ir.actions.act_window">
+        <field name="name">Terminaux</field>
+        <field name="res_model">puerto.terminal</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ══ CONTENANT ════════════════════════════════════════════════════════ -->
+    <record id="view_puerto_contenant_form" model="ir.ui.view">
+        <field name="name">puerto.contenant.form</field>
+        <field name="model">puerto.contenant</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_puerto_contenant_tree" model="ir.ui.view">
+        <field name="name">puerto.contenant.tree</field>
+        <field name="model">puerto.contenant</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_puerto_contenant" model="ir.actions.act_window">
+        <field name="name">Contenants</field>
+        <field name="res_model">puerto.contenant</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ══ PRIORITÉ ═════════════════════════════════════════════════════════ -->
+    <record id="view_puerto_priorite_form" model="ir.ui.view">
+        <field name="name">puerto.priorite.form</field>
+        <field name="model">puerto.priorite</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="sequence"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_puerto_priorite_tree" model="ir.ui.view">
+        <field name="name">puerto.priorite.tree</field>
+        <field name="model">puerto.priorite</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_puerto_priorite" model="ir.actions.act_window">
+        <field name="name">Priorités</field>
+        <field name="res_model">puerto.priorite</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ══ MODE TRANSPORT ══════════════════════════════════════════════════ -->
+    <record id="view_puerto_mode_transport_form" model="ir.ui.view">
+        <field name="name">puerto.mode.transport.form</field>
+        <field name="model">puerto.mode.transport</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                        <field name="type"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_puerto_mode_transport_tree" model="ir.ui.view">
+        <field name="name">puerto.mode.transport.tree</field>
+        <field name="model">puerto.mode.transport</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="type"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_puerto_mode_transport" model="ir.actions.act_window">
+        <field name="name">Modes de Transport</field>
+        <field name="res_model">puerto.mode.transport</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ══ TYPE TRANSPORT ══════════════════════════════════════════════════ -->
+    <record id="view_puerto_type_transport_form" model="ir.ui.view">
+        <field name="name">puerto.type.transport.form</field>
+        <field name="model">puerto.type.transport</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                        <field name="mode_transport_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_puerto_type_transport_tree" model="ir.ui.view">
+        <field name="name">puerto.type.transport.tree</field>
+        <field name="model">puerto.type.transport</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="mode_transport_id"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_puerto_type_transport" model="ir.actions.act_window">
+        <field name="name">Types de Transport</field>
+        <field name="res_model">puerto.type.transport</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ══ PRESTATION ═══════════════════════════════════════════════════════ -->
+    <record id="view_puerto_prestation_form" model="ir.ui.view">
+        <field name="name">puerto.prestation.form</field>
+        <field name="model">puerto.prestation</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="price"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_puerto_prestation_tree" model="ir.ui.view">
+        <field name="name">puerto.prestation.tree</field>
+        <field name="model">puerto.prestation</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="price"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_puerto_prestation" model="ir.actions.act_window">
+        <field name="name">Prestations</field>
+        <field name="res_model">puerto.prestation</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

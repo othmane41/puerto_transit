@@ -1,0 +1,18 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_puerto_dossier_user,puerto.dossier user,model_puerto_dossier,base.group_user,1,1,1,1
+access_puerto_dossier_facture_user,puerto.dossier.facture user,model_puerto_dossier_facture,base.group_user,1,1,1,1
+access_puerto_dossier_facture_line_user,puerto.dossier.facture.line user,model_puerto_dossier_facture_line,base.group_user,1,1,1,1
+access_puerto_dossier_charge_user,puerto.dossier.charge user,model_puerto_dossier_charge,base.group_user,1,1,1,1
+access_puerto_dossier_document_user,puerto.dossier.document user,model_puerto_dossier_document,base.group_user,1,1,1,1
+access_puerto_dossier_circuit_user,puerto.dossier.circuit user,model_puerto_dossier_circuit,base.group_user,1,1,1,1
+access_puerto_regime_user,puerto.regime user,model_puerto_regime,base.group_user,1,1,1,1
+access_puerto_bureau_user,puerto.bureau user,model_puerto_bureau,base.group_user,1,1,1,1
+access_puerto_arrondissement_user,puerto.arrondissement user,model_puerto_arrondissement,base.group_user,1,1,1,1
+access_puerto_lieu_stockage_user,puerto.lieu.stockage user,model_puerto_lieu_stockage,base.group_user,1,1,1,1
+access_puerto_terminal_user,puerto.terminal user,model_puerto_terminal,base.group_user,1,1,1,1
+access_puerto_contenant_user,puerto.contenant user,model_puerto_contenant,base.group_user,1,1,1,1
+access_puerto_priorite_user,puerto.priorite user,model_puerto_priorite,base.group_user,1,1,1,1
+access_puerto_mode_transport_user,puerto.mode.transport user,model_puerto_mode_transport,base.group_user,1,1,1,1
+access_puerto_type_transport_user,puerto.type.transport user,model_puerto_type_transport,base.group_user,1,1,1,1
+access_puerto_prestation_user,puerto.prestation user,model_puerto_prestation,base.group_user,1,1,1,1
+access_puerto_dossier_portal,puerto.dossier portal,model_puerto_dossier,base.group_portal,1,0,0,0

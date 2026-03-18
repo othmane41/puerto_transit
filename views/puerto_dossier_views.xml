@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ══ FORM ══════════════════════════════════════════════════════════════ -->
+    <record id="view_puerto_dossier_form" model="ir.ui.view">
+        <field name="name">puerto.dossier.form</field>
+        <field name="model">puerto.dossier</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_open" string="Ouvrir" type="object"
+                            invisible="state != 'brouillon'" class="btn-primary"/>
+                    <button name="action_en_cours" string="En Cours" type="object"
+                            invisible="state != 'ouvert'" class="btn-primary"/>
+                    <button name="action_cloture" string="Clôturer" type="object"
+                            invisible="state != 'en_cours'" class="btn-primary"/>
+                    <button name="action_reset" string="Remettre en Brouillon" type="object"
+                            invisible="state == 'brouillon'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="brouillon,ouvert,en_cours,cloture"/>
+                </header>
+                <sheet>
+                    <!-- Smart buttons -->
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_factures" icon="fa-file-text-o">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="facture_count"/></span>
+                                <span class="o_stat_text">Factures</span>
+                            </div>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_charges" icon="fa-money">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="charge_count"/></span>
+                                <span class="o_stat_text">Charges</span>
+                            </div>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_documents" icon="fa-paperclip">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="document_count"/></span>
+                                <span class="o_stat_text">Documents</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <notebook>
+                        <!-- ── Onglet Dossier ── -->
+                        <page string="Dossier" name="dossier">
+                            <group string="En-tête">
+                                <group>
+                                    <field name="type_dossier"/>
+                                    <field name="date_creation"/>
+                                    <field name="date_reception_demande"/>
+                                    <field name="date_reception_dernier_element"/>
+                                    <field name="date_etd_eta"/>
+                                    <field name="priorite_id"/>
+                                </group>
+                                <group>
+                                    <field name="selectivite"/>
+                                    <field name="categorie"/>
+                                    <field name="groupage"/>
+                                    <field name="reference_client"/>
+                                    <field name="partner_id"/>
+                                    <field name="client_facturation_id"/>
+                                    <field name="expediteur_id"/>
+                                    <field name="destinataire_id"/>
+                                </group>
+                            </group>
+                            <group string="Déclaration Douanière">
+                                <group>
+                                    <field name="num_dum_initiale"/>
+                                    <field name="num_dum_definitive"/>
+                                    <field name="date_debut_dum"/>
+                                    <field name="date_fin_dum"/>
+                                    <field name="regime_id"/>
+                                    <field name="bureau_dedouanement_id"/>
+                                </group>
+                                <group>
+                                    <field name="arrondissement_id"/>
+                                    <field name="lieu_stockage_id"/>
+                                    <field name="lieu_stockage_dest_id"/>
+                                    <field name="bureau_destination_id"/>
+                                    <field name="currency_id"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- ── Onglet Marchandise ── -->
+                        <page string="Marchandise" name="marchandise">
+                            <group>
+                                <group string="Contenants">
+                                    <field name="type_contenant_palette"/>
+                                    <field name="nb_contenant_palette"/>
+                                    <field name="type_contenant_colis"/>
+                                    <field name="nb_contenant_colis"/>
+                                    <field name="contenant_id"/>
+                                    <field name="nb_contenant"/>
+                                </group>
+                                <group string="Détails">
+                                    <field name="nature_marchandise"/>
+                                    <field name="poids_brut_total"/>
+                                    <field name="incoterm_id"/>
+                                    <field name="pays_origine_id"/>
+                                    <field name="pays_provenance_id"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- ── Onglet Transport ── -->
+                        <page string="Transport" name="transport">
+                            <group>
+                                <group>
+                                    <field name="mode_transport_id"/>
+                                    <field name="type_transport_id"/>
+                                    <field name="date_voyage"/>
+                                    <field name="date_presentation"/>
+                                </group>
+                                <group>
+                                    <field name="transporteur_id"/>
+                                    <field name="contact_chauffeur"/>
+                                    <field name="terminal_id"/>
+                                    <field name="num_connaissement"/>
+                                    <field name="num_lot"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- ── Onglet Factures ── -->
+                        <page string="Factures" name="factures">
+                            <field name="facture_ids">
+                                <list editable="bottom">
+                                    <field name="num_facture"/>
+                                    <field name="date_facture"/>
+                                    <field name="partner_id"/>
+                                    <field name="valeur_total"/>
+                                    <field name="currency_id"/>
+                                    <field name="paiement"/>
+                                    <field name="type_marchandise"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <!-- ── Onglet Charges ── -->
+                        <page string="Charges / Débours" name="charges">
+                            <field name="charge_ids">
+                                <list editable="bottom">
+                                    <field name="prestataire_id"/>
+                                    <field name="prestation_id"/>
+                                    <field name="date"/>
+                                    <field name="prix_unitaire"/>
+                                    <field name="quantite"/>
+                                    <field name="montant_total"/>
+                                    <field name="currency_id"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <!-- ── Onglet Documents ── -->
+                        <page string="Documents" name="documents">
+                            <field name="document_ids">
+                                <list editable="bottom">
+                                    <field name="type_annexe"/>
+                                    <field name="nom_document"/>
+                                    <field name="date_reception"/>
+                                    <field name="date_annexation"/>
+                                    <field name="createur_id"/>
+                                    <field name="commentaire"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <!-- ── Onglet Workflow ── -->
+                        <page string="Circuit / Workflow" name="workflow">
+                            <field name="circuit_ids">
+                                <list editable="bottom">
+                                    <field name="intitule_tache"/>
+                                    <field name="service_demandeur"/>
+                                    <field name="user_demandeur_id"/>
+                                    <field name="service_destinataire"/>
+                                    <field name="user_destinataire_id"/>
+                                    <field name="priorite_id"/>
+                                    <field name="statut"/>
+                                    <field name="date_creation"/>
+                                    <field name="date_cloture"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ══ LIST ══════════════════════════════════════════════════════════════ -->
+    <record id="view_puerto_dossier_tree" model="ir.ui.view">
+        <field name="name">puerto.dossier.tree</field>
+        <field name="model">puerto.dossier</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="type_dossier"/>
+                <field name="date_creation"/>
+                <field name="partner_id"/>
+                <field name="date_etd_eta"/>
+                <field name="priorite_id"/>
+                <field name="selectivite"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ══ SEARCH ════════════════════════════════════════════════════════════ -->
+    <record id="view_puerto_dossier_search" model="ir.ui.view">
+        <field name="name">puerto.dossier.search</field>
+        <field name="model">puerto.dossier</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="type_dossier"/>
+                <filter string="Brouillon" name="brouillon"
+                        domain="[('state','=','brouillon')]"/>
+                <filter string="Ouvert" name="ouvert"
+                        domain="[('state','=','ouvert')]"/>
+                <filter string="En Cours" name="en_cours"
+                        domain="[('state','=','en_cours')]"/>
+                <filter string="Clôturé" name="cloture"
+                        domain="[('state','=','cloture')]"/>
+                <filter string="Import" name="import"
+                        domain="[('type_dossier','=','import')]"/>
+                <filter string="Export" name="export"
+                        domain="[('type_dossier','=','export')]"/>
+                <group>
+                    <filter string="Statut" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Type" name="group_type"
+                            context="{'group_by': 'type_dossier'}"/>
+                    <filter string="Partenaire" name="group_partner"
+                            context="{'group_by': 'partner_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ══ ACTION ════════════════════════════════════════════════════════════ -->
+    <record id="action_puerto_dossier" model="ir.actions.act_window">
+        <field name="name">Dossiers Transit</field>
+        <field name="res_model">puerto.dossier</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_puerto_dossier_search"/>
+        <field name="context">{}</field>
+    </record>
+
+</odoo>
