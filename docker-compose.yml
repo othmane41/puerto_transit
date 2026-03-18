@@ -15,7 +15,7 @@ services:
     volumes:
       - ./docker/config/odoo.conf:/etc/odoo/odoo.conf:ro
       - ./docker/filestore:/var/lib/odoo
-      - .:/mnt/extra-addons/puerto_transit
+      - ./puerto_transit:/mnt/extra-addons/puerto_transit
     environment:
       - HOST=postgres
       - USER=odoo
