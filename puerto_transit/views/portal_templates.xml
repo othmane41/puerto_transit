@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+<!-- ══ Google Fonts — Inter + Inter Tight ════════════════════════════════ -->
+<template id="puerto_transit_google_fonts" inherit_id="website.layout" name="Puerto Transit Fonts">
+    <xpath expr="//head" position="inside">
+        <link rel="preconnect" href="https://fonts.googleapis.com"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Inter+Tight:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+    </xpath>
+</template>
+
 <!-- ══ HOME PORTAL — tuile dossiers ════════════════════════════════════════ -->
 <template id="portal_my_home_dossiers" name="Portal My Home: Transit"
           inherit_id="portal.portal_my_home"
