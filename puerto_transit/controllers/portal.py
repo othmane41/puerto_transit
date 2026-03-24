@@ -74,6 +74,12 @@ class TransitPortal(CustomerPortal):
 
         active_tab = kw.get('tab', 'ouverture')
 
+        # Stats by state for bento grid
+        stat_ouvert   = Dossier.search_count(domain + [('state', '=', 'ouvert')])
+        stat_en_cours = Dossier.search_count(domain + [('state', '=', 'en_cours')])
+        stat_cloture  = Dossier.search_count(domain + [('state', '=', 'cloture')])
+        stat_brouillon = Dossier.search_count(domain + [('state', '=', 'brouillon')])
+
         return request.render('puerto_transit.portal_my_dossiers', {
             'dossiers': dossiers,
             'page_name': 'dossiers',
@@ -85,6 +91,11 @@ class TransitPortal(CustomerPortal):
             'total_poids_net': total_poids_net,
             'total_poids_brut': total_poids_brut,
             'active_tab': active_tab,
+            'stat_ouvert': stat_ouvert,
+            'stat_en_cours': stat_en_cours,
+            'stat_cloture': stat_cloture,
+            'stat_brouillon': stat_brouillon,
+            'dossier_count': dossier_count,
         })
 
     # ── Détail ────────────────────────────────────────────────────────────────

@@ -20,12 +20,63 @@
     <t t-call="portal.portal_layout">
         <div class="o_pt_page">
 
-            <!-- ── Header ── -->
+            <!-- ── Page Header ── -->
             <div class="o_pt_list_header">
-                <h4>Mes Dossiers Transit</h4>
+                <div>
+                    <h4>Mes Dossiers Transit</h4>
+                    <p class="o_pt_list_subtitle">Gérez et suivez vos opérations logistiques en cours.</p>
+                </div>
                 <a href="/my/dossiers/new" class="o_pt_btn_new">
                     <i class="fa fa-plus"/> Nouveau Dossier
                 </a>
+            </div>
+
+            <!-- ── Bento Stats Grid ── -->
+            <div class="o_pt_bento_grid">
+                <!-- En cours -->
+                <div class="o_pt_bento_card">
+                    <div class="o_pt_bento_card_top">
+                        <i class="fa fa-clock-o o_pt_bento_icon"/>
+                        <span class="o_pt_bento_label">En cours</span>
+                    </div>
+                    <div>
+                        <p class="o_pt_bento_num"><t t-esc="stat_en_cours"/></p>
+                        <p class="o_pt_bento_sub">Dossiers en traitement</p>
+                    </div>
+                </div>
+                <!-- Ouverts (teal accent) -->
+                <div class="o_pt_bento_card accent-teal">
+                    <div class="o_pt_bento_card_top">
+                        <i class="fa fa-folder-open o_pt_bento_icon"/>
+                        <span class="o_pt_bento_label">Ouverts</span>
+                    </div>
+                    <div>
+                        <p class="o_pt_bento_num"><t t-esc="stat_ouvert"/></p>
+                        <p class="o_pt_bento_sub">Dossiers actifs</p>
+                    </div>
+                </div>
+                <!-- Clôturés -->
+                <div class="o_pt_bento_card accent-success">
+                    <div class="o_pt_bento_card_top">
+                        <i class="fa fa-check-circle o_pt_bento_icon"/>
+                        <span class="o_pt_bento_label">Clôturés</span>
+                    </div>
+                    <div>
+                        <p class="o_pt_bento_num"><t t-esc="stat_cloture"/></p>
+                        <p class="o_pt_bento_sub">Opérations terminées</p>
+                    </div>
+                </div>
+                <!-- Brouillons -->
+                <div class="o_pt_bento_card">
+                    <div class="o_pt_bento_card_top">
+                        <i class="fa fa-file-text-o o_pt_bento_icon" style="color:var(--pt-on-surface-muted)"/>
+                        <span class="o_pt_bento_label" style="color:var(--pt-on-surface-muted)">Brouillons</span>
+                    </div>
+                    <div>
+                        <p class="o_pt_bento_num" style="color:var(--pt-on-surface-muted)"><t t-esc="stat_brouillon"/></p>
+                        <p class="o_pt_bento_sub">En attente de soumission</p>
+                    </div>
+                </div>
             </div>
 
             <!-- ── Tabs ── -->
@@ -47,51 +98,88 @@
             </div>
 
             <!-- ── Tab content ── -->
-            <div class="tab-content" style="padding:14px;">
+            <div class="tab-content">
 
                 <!-- ═ TAB : Ouverture dossier ═ -->
                 <div t-attf-class="tab-pane fade #{'show active' if active_tab == 'ouverture' else ''}"
                      id="tab-list-ouverture" role="tabpanel">
                     <t t-if="not dossiers">
-                        <div class="o_pt_table_wrap p-4 text-center text-muted" style="font-size:13px;">
-                            Aucun dossier. <a href="/my/dossiers/new">Créer votre premier dossier</a>.
+                        <div class="o_pt_table_wrap" style="padding:48px;text-align:center;color:var(--pt-on-surface-muted);">
+                            <i class="fa fa-folder-open-o" style="font-size:32px;display:block;margin-bottom:12px;opacity:.4;"/>
+                            <p style="font-size:14px;font-weight:600;margin:0 0 6px;">Aucun dossier pour le moment</p>
+                            <p style="font-size:13px;margin:0 0 16px;opacity:.7;">Commencez par créer votre premier dossier transit.</p>
+                            <a href="/my/dossiers/new" class="o_pt_btn_new" style="display:inline-flex;">
+                                <i class="fa fa-plus"/> Créer un dossier
+                            </a>
                         </div>
                     </t>
                     <t t-if="dossiers">
                         <div class="o_pt_table_wrap">
-                            <table class="o_pt_table">
-                                <thead>
-                                    <tr>
-                                        <th>N° Dossier</th>
-                                        <th>Type</th>
-                                        <th>Date Création</th>
-                                        <th>Soumissionnaire</th>
-                                        <th>ETD/ETA</th>
-                                        <th>Priorité</th>
-                                        <th>Statut</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <t t-foreach="dossiers" t-as="dossier">
+                            <!-- Table header bar -->
+                            <div class="o_pt_table_wrap_header">
+                                <span class="o_pt_table_wrap_title">Dossiers actifs</span>
+                                <div class="o_pt_table_wrap_actions">
+                                    <span class="o_pt_table_action_btn primary">Tous les dossiers</span>
+                                    <a href="/my/dossiers/new" class="o_pt_table_action_btn ghost">
+                                        <i class="fa fa-plus"/> Nouveau
+                                    </a>
+                                </div>
+                            </div>
+                            <div style="overflow-x:auto;">
+                                <table class="o_pt_table">
+                                    <thead>
                                         <tr>
-                                            <td><a t-attf-href="/my/dossiers/#{dossier.id}"><t t-esc="dossier.name"/></a></td>
-                                            <td><t t-esc="dict(dossier._fields['type_dossier'].selection).get(dossier.type_dossier, '')"/></td>
-                                            <td><span t-field="dossier.date_creation" t-options='{"widget":"datetime"}'/></td>
-                                            <td><span t-field="dossier.partner_id"/></td>
-                                            <td><span t-field="dossier.date_etd_eta" t-options='{"widget":"datetime"}'/></td>
-                                            <td><span t-field="dossier.priorite_id"/></td>
-                                            <td>
-                                                <span t-attf-class="o_pt_badge o_pt_badge_#{dossier.state}">
-                                                    <t t-esc="dict(dossier._fields['state'].selection).get(dossier.state, '')"/>
-                                                </span>
-                                            </td>
+                                            <th>N° Dossier</th>
+                                            <th>Type</th>
+                                            <th>Date Création</th>
+                                            <th>Soumissionnaire</th>
+                                            <th>ETD / ETA</th>
+                                            <th>Priorité</th>
+                                            <th>Statut</th>
                                         </tr>
-                                    </t>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div t-if="pager" class="text-center mt-3">
-                            <t t-call="portal.pager"/>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="dossiers" t-as="dossier">
+                                            <tr>
+                                                <td class="o_pt_td_id">
+                                                    <a t-attf-href="/my/dossiers/#{dossier.id}" class="o_pt_dossier_name">
+                                                        <t t-esc="dossier.name"/>
+                                                    </a>
+                                                </td>
+                                                <td style="font-size:12.5px;color:var(--pt-on-surface-variant);">
+                                                    <t t-esc="dict(dossier._fields['type_dossier'].selection).get(dossier.type_dossier, '—')"/>
+                                                </td>
+                                                <td style="font-size:12.5px;">
+                                                    <span t-field="dossier.date_creation" t-options='{"widget":"datetime"}'/>
+                                                </td>
+                                                <td style="font-size:12.5px;font-weight:500;">
+                                                    <span t-field="dossier.partner_id"/>
+                                                </td>
+                                                <td style="font-size:12.5px;">
+                                                    <span t-field="dossier.date_etd_eta" t-options='{"widget":"datetime"}'/>
+                                                </td>
+                                                <td style="font-size:12.5px;">
+                                                    <span t-field="dossier.priorite_id"/>
+                                                </td>
+                                                <td>
+                                                    <span t-attf-class="o_pt_badge o_pt_badge_#{dossier.state}">
+                                                        <t t-esc="dict(dossier._fields['state'].selection).get(dossier.state, '')"/>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- Table footer with pagination -->
+                            <div class="o_pt_table_footer">
+                                <span class="o_pt_table_count">
+                                    <t t-esc="dossier_count"/> dossier<t t-if="dossier_count != 1">s</t> au total
+                                </span>
+                                <div t-if="pager" class="o_pt_pagination">
+                                    <t t-call="portal.pager"/>
+                                </div>
+                            </div>
                         </div>
                     </t>
                 </div>
