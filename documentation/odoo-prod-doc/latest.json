@@ -1,0 +1,385 @@
+{
+  "schema_version": 2,
+  "project": "puerto_transit",
+  "odoo_versions": [
+    "19.0"
+  ],
+  "version": "v1",
+  "asset_version": "v1-2026-09-08-full",
+  "parent_version": null,
+  "date": "2026-09-08",
+  "type": "full",
+  "production_ref": "origin/main",
+  "period": {
+    "from_commit": null,
+    "to_commit": "1c8e5eab7e9aef3f42e52b0ca7b2052d8b151cea"
+  },
+  "document": "functional_guide",
+  "changed_page_ids": [
+    "page-puerto-transit"
+  ],
+  "editorial_style": "odoo_official_documentation",
+  "navigation": {
+    "template": {
+      "id": "odoo-prod-doc-nabilum",
+      "version": 1
+    },
+    "global_search": {
+      "enabled": true,
+      "placement": "header",
+      "scope": [
+        "workflows",
+        "pages",
+        "content"
+      ]
+    }
+  },
+  "documentation_limitations": [
+    "Documentation complète du code Git de production exact avec limitations runtime documentées.",
+    "Le runtime partagé ptmaroc ne permet aucune affirmation d’installation, rôle, écran, donnée, résultat ou transition pour origin/main.",
+    "Chaque surface candidate est documentée sans capture avec des preuves Git statiques exactes."
+  ],
+  "workflows": [
+    {
+      "id": "workflow-dossier-transit",
+      "title": "Préparer et suivre un dossier de transit",
+      "introduction": "Parcours reconstruit depuis le modèle de dossier, ses vues, ses actions et les paramètres de référence.",
+      "entry_point": "Consulter le guide avec le hash Git de production indiqué.",
+      "actors": [
+        "Utilisateur autorisé de l’application"
+      ],
+      "prerequisites": [
+        "Le périmètre est vérifié sur le hash Git de production exact."
+      ],
+      "decisions": [
+        "Les droits, données et résultats observables ne sont pas vérifiés au runtime partagé."
+      ],
+      "variants": [
+        "Une vérification séparée, en lecture seule, est nécessaire si une base est rattachée sans ambiguïté à ce dépôt."
+      ],
+      "page_ids": [
+        "page-puerto-transit"
+      ],
+      "steps": [
+        {
+          "id": "workflow-dossier-transit-step-01",
+          "title": "Préparer le dossier",
+          "actors": [
+            "Utilisateur autorisé de l’application"
+          ],
+          "entry": "Preuves statiques Git de production exactes.",
+          "action": "Repérer le type de dossier, les partenaires, l’ETD/ETA, le régime, le bureau et les données de marchandise.",
+          "result": "Les champs et dépendances sont documentés statiquement.",
+          "transition": "Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime.",
+          "page_ids": [
+            "page-puerto-transit"
+          ],
+          "feature_ids": [
+            "feature-puerto-transit"
+          ]
+        },
+        {
+          "id": "workflow-dossier-transit-step-02",
+          "title": "Organiser transport et déclaration",
+          "actors": [
+            "Utilisateur autorisé de l’application"
+          ],
+          "entry": "Preuves statiques Git de production exactes.",
+          "action": "Repérer les données de transport, scellés, DUM, destination et documents de sortie.",
+          "result": "Le chaînage est couvert depuis les blobs Git exacts.",
+          "transition": "Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime.",
+          "page_ids": [
+            "page-puerto-transit"
+          ],
+          "feature_ids": [
+            "feature-puerto-transit"
+          ]
+        },
+        {
+          "id": "workflow-dossier-transit-step-03",
+          "title": "Suivre le statut",
+          "actors": [
+            "Utilisateur autorisé de l’application"
+          ],
+          "entry": "Preuves statiques Git de production exactes.",
+          "action": "Repérer les transitions Brouillon, Ouvert, En Cours et Clôturé ainsi que leurs boutons.",
+          "result": "Les transitions sont décrites sans être déclenchées.",
+          "transition": "Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime.",
+          "page_ids": [
+            "page-puerto-transit"
+          ],
+          "feature_ids": [
+            "feature-puerto-transit"
+          ]
+        }
+      ],
+      "completion": "Parcours documenté de bout en bout par preuves statiques Git, sans affirmation runtime."
+    },
+    {
+      "id": "workflow-facturation-charges",
+      "title": "Préparer factures et charges du dossier",
+      "introduction": "Parcours reconstruit depuis les relations dossier–facture–ligne–charge et les actions de consultation.",
+      "entry_point": "Consulter le guide avec le hash Git de production indiqué.",
+      "actors": [
+        "Utilisateur autorisé de l’application"
+      ],
+      "prerequisites": [
+        "Le périmètre est vérifié sur le hash Git de production exact."
+      ],
+      "decisions": [
+        "Les droits, données et résultats observables ne sont pas vérifiés au runtime partagé."
+      ],
+      "variants": [
+        "Une vérification séparée, en lecture seule, est nécessaire si une base est rattachée sans ambiguïté à ce dépôt."
+      ],
+      "page_ids": [
+        "page-puerto-transit"
+      ],
+      "steps": [
+        {
+          "id": "workflow-facturation-charges-step-01",
+          "title": "Relier une facture au dossier",
+          "actors": [
+            "Utilisateur autorisé de l’application"
+          ],
+          "entry": "Preuves statiques Git de production exactes.",
+          "action": "Repérer les champs de facture, fournisseur, devise, poids, paiement et lignes.",
+          "result": "Les calculs de prix net et valeur totale sont documentés statiquement.",
+          "transition": "Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime.",
+          "page_ids": [
+            "page-puerto-transit"
+          ],
+          "feature_ids": [
+            "feature-puerto-transit"
+          ]
+        },
+        {
+          "id": "workflow-facturation-charges-step-02",
+          "title": "Ajouter les charges et débours",
+          "actors": [
+            "Utilisateur autorisé de l’application"
+          ],
+          "entry": "Preuves statiques Git de production exactes.",
+          "action": "Repérer prestation, prestataire, quantité, prix et mode de facturation.",
+          "result": "Le calcul du montant est couvert sans créer de donnée.",
+          "transition": "Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime.",
+          "page_ids": [
+            "page-puerto-transit"
+          ],
+          "feature_ids": [
+            "feature-puerto-transit"
+          ]
+        },
+        {
+          "id": "workflow-facturation-charges-step-03",
+          "title": "Consulter les listes liées",
+          "actors": [
+            "Utilisateur autorisé de l’application"
+          ],
+          "entry": "Preuves statiques Git de production exactes.",
+          "action": "Repérer les actions de dossiers vers factures et charges.",
+          "result": "Les listes et résultats réels restent non vérifiés au runtime.",
+          "transition": "Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime.",
+          "page_ids": [
+            "page-puerto-transit"
+          ],
+          "feature_ids": [
+            "feature-puerto-transit"
+          ]
+        }
+      ],
+      "completion": "Parcours documenté de bout en bout par preuves statiques Git, sans affirmation runtime."
+    },
+    {
+      "id": "workflow-circuit-documents",
+      "title": "Organiser circuit et documents de transit",
+      "introduction": "Parcours reconstruit depuis documents joints, circuit de validation et compteurs du dossier.",
+      "entry_point": "Consulter le guide avec le hash Git de production indiqué.",
+      "actors": [
+        "Utilisateur autorisé de l’application"
+      ],
+      "prerequisites": [
+        "Le périmètre est vérifié sur le hash Git de production exact."
+      ],
+      "decisions": [
+        "Les droits, données et résultats observables ne sont pas vérifiés au runtime partagé."
+      ],
+      "variants": [
+        "Une vérification séparée, en lecture seule, est nécessaire si une base est rattachée sans ambiguïté à ce dépôt."
+      ],
+      "page_ids": [
+        "page-puerto-transit"
+      ],
+      "steps": [
+        {
+          "id": "workflow-circuit-documents-step-01",
+          "title": "Préparer les documents",
+          "actors": [
+            "Utilisateur autorisé de l’application"
+          ],
+          "entry": "Preuves statiques Git de production exactes.",
+          "action": "Repérer les annexes, réceptions, références et relation au dossier.",
+          "result": "Les objets documentaires sont reliés aux sources Git exactes.",
+          "transition": "Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime.",
+          "page_ids": [
+            "page-puerto-transit"
+          ],
+          "feature_ids": [
+            "feature-puerto-transit"
+          ]
+        },
+        {
+          "id": "workflow-circuit-documents-step-02",
+          "title": "Décrire le circuit",
+          "actors": [
+            "Utilisateur autorisé de l’application"
+          ],
+          "entry": "Preuves statiques Git de production exactes.",
+          "action": "Repérer demandeur, destinataire, tâche, priorité, dates et statut du circuit.",
+          "result": "Les rôles et statuts effectifs ne sont pas affirmés.",
+          "transition": "Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime.",
+          "page_ids": [
+            "page-puerto-transit"
+          ],
+          "feature_ids": [
+            "feature-puerto-transit"
+          ]
+        },
+        {
+          "id": "workflow-circuit-documents-step-03",
+          "title": "Suivre les compteurs",
+          "actors": [
+            "Utilisateur autorisé de l’application"
+          ],
+          "entry": "Preuves statiques Git de production exactes.",
+          "action": "Repérer les champs calculés de documents, factures et charges sur le dossier.",
+          "result": "Le résultat est une logique statique, sans donnée client.",
+          "transition": "Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime.",
+          "page_ids": [
+            "page-puerto-transit"
+          ],
+          "feature_ids": [
+            "feature-puerto-transit"
+          ]
+        }
+      ],
+      "completion": "Parcours documenté de bout en bout par preuves statiques Git, sans affirmation runtime."
+    },
+    {
+      "id": "workflow-portail-client",
+      "title": "Consulter ou déposer un dossier depuis le portail",
+      "introduction": "Parcours reconstruit depuis les routes, contrôles d’appartenance partenaire et templates QWeb.",
+      "entry_point": "Consulter le guide avec le hash Git de production indiqué.",
+      "actors": [
+        "Utilisateur autorisé de l’application"
+      ],
+      "prerequisites": [
+        "Le périmètre est vérifié sur le hash Git de production exact."
+      ],
+      "decisions": [
+        "Les droits, données et résultats observables ne sont pas vérifiés au runtime partagé."
+      ],
+      "variants": [
+        "Une vérification séparée, en lecture seule, est nécessaire si une base est rattachée sans ambiguïté à ce dépôt."
+      ],
+      "page_ids": [
+        "page-puerto-transit"
+      ],
+      "steps": [
+        {
+          "id": "workflow-portail-client-step-01",
+          "title": "Lister les dossiers",
+          "actors": [
+            "Utilisateur autorisé de l’application"
+          ],
+          "entry": "Preuves statiques Git de production exactes.",
+          "action": "Repérer les routes de liste, pagination, tris et statistiques par état.",
+          "result": "La visibilité réelle du portail n’est pas affirmée.",
+          "transition": "Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime.",
+          "page_ids": [
+            "page-puerto-transit"
+          ],
+          "feature_ids": [
+            "feature-puerto-transit"
+          ]
+        },
+        {
+          "id": "workflow-portail-client-step-02",
+          "title": "Consulter le détail",
+          "actors": [
+            "Utilisateur autorisé de l’application"
+          ],
+          "entry": "Preuves statiques Git de production exactes.",
+          "action": "Repérer le contrôle d’existence et d’appartenance du dossier au partenaire connecté.",
+          "result": "Les droits effectifs restent non vérifiés.",
+          "transition": "Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime.",
+          "page_ids": [
+            "page-puerto-transit"
+          ],
+          "feature_ids": [
+            "feature-puerto-transit"
+          ]
+        },
+        {
+          "id": "workflow-portail-client-step-03",
+          "title": "Préparer une demande",
+          "actors": [
+            "Utilisateur autorisé de l’application"
+          ],
+          "entry": "Preuves statiques Git de production exactes.",
+          "action": "Repérer la route de formulaire, les champs obligatoires et la validation statique des valeurs.",
+          "result": "Aucun dossier n’est créé pendant la documentation.",
+          "transition": "Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime.",
+          "page_ids": [
+            "page-puerto-transit"
+          ],
+          "feature_ids": [
+            "feature-puerto-transit"
+          ]
+        }
+      ],
+      "completion": "Parcours documenté de bout en bout par preuves statiques Git, sans affirmation runtime."
+    }
+  ],
+  "groups": [
+    {
+      "label": "Transit douanier et portail client",
+      "pages": [
+        {
+          "id": "page-puerto-transit",
+          "title": "Dossiers, facturation et portail de transit",
+          "introduction": "Périmètre Puerto Transit reconstruit depuis le code de production exact.",
+          "content_html": "<p><strong>683</strong> identifiants Git sont reliés à cette rubrique : dossiers de transit, déclarations, marchandises, transport, factures, charges, documents, circuits, paramètres, sécurité et portail client.</p><p>Les preuves sont les blobs Git de <code>1c8e5eab7e9aef3f42e52b0ca7b2052d8b151cea</code>. Les écrans, données, droits, résultats et transitions ne sont pas déclarés observés : le runtime partagé avec ptmaroc ne permet pas de les attribuer à ce dépôt.</p>",
+          "required_screen_kinds": [],
+          "form_available": false,
+          "screenshots": [],
+          "screenshot_status": "documented_without_screenshot",
+          "screenshot_reason": "Aucune session runtime ne peut être attribuée sans ambiguïté à puerto_transit/origin/main.",
+          "screenshot_limitation": "runtime_identity_ambiguous",
+          "evidence_basis": [
+            "production_head:1c8e5eab7e9aef3f42e52b0ca7b2052d8b151cea",
+            "module_manifest:puerto_transit/__manifest__.py",
+            "git_inventory_sha256:563840b4b384ffa3629cb6b9587109a72880429968455834eeb618813bbc2e28",
+            "mapped_identifiers:683"
+          ]
+        }
+      ]
+    }
+  ],
+  "commits": [],
+  "coverage": {
+    "status": "passed",
+    "coverage_percent": 100,
+    "module_count": 1,
+    "file_count": 36,
+    "git_artifact_count": 646,
+    "runtime_artifact_count": 0,
+    "feature_count": 1,
+    "modules_uncovered": 0,
+    "files_uncovered": 0,
+    "artifacts_uncovered": 0,
+    "features_uncovered": 0,
+    "pages_blocked": 0,
+    "coverage_json": "v1-2026-09-08-full-coverage.json"
+  }
+}
