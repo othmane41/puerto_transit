@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Documentation fonctionnelle Puerto Transit">
+  <meta name="documentation-template" content="odoo-prod-doc-nabilum-v1">
+  <meta name="document-package" content="versioned-with-local-images">
+  <title>Documentation fonctionnelle Puerto Transit</title>
+  <style data-template-asset="nabilum-doc-shell.css">
+:root {
+  --o: #714B67;
+  --link: #017E84;
+  --text: #2f2f33;
+  --muted: #6b6b72;
+  --line: #dddde2;
+  --bg: #f7f7f8;
+  --header: 68px;
+  --left: 292px;
+  --right: 230px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; color: var(--text); background: #fff; font: 16px/1.55 Inter, "Segoe UI", Roboto, sans-serif; }
+a { color: var(--link); }
+button, input, select { font: inherit; }
+
+.topbar {
+  position: fixed;
+  z-index: 30;
+  inset: 0 0 auto 0;
+  height: var(--header);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 24px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+.brand { display: flex; align-items: center; gap: 12px; min-width: 250px; color: var(--o); font-weight: 750; }
+.brand-mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 6px; background: var(--o); color: #fff; font-family: Georgia, serif; font-size: 20px; }
+.topbar-search { position: relative; display: flex; align-items: center; flex: 1; max-width: 560px; }
+.topbar-search input { width: 100%; padding: 10px 96px 10px 13px; border: 1px solid #cfcfd5; border-radius: 4px; }
+.search-tools { position: absolute; right: 7px; display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 12px; }
+.search-clear { display: none; padding: 2px 5px; border: 0; background: transparent; color: var(--o); cursor: pointer; font-size: 18px; line-height: 1; }
+.search-clear.show { display: inline-block; }
+.topbar select, .topbar-link, .print-btn { padding: 9px 11px; border: 1px solid #cfcfd5; border-radius: 4px; background: #fff; color: var(--text); text-decoration: none; }
+.menu-btn { display: none; border: 0; background: transparent; color: var(--o); font-size: 22px; }
+
+.leftnav { position: fixed; z-index: 20; top: var(--header); bottom: 0; left: 0; width: var(--left); overflow: auto; padding: 20px 18px; background: var(--bg); border-right: 1px solid var(--line); }
+.tree-actions { display: flex; gap: 8px; margin-bottom: 14px; }
+.tree-actions button { flex: 1; padding: 7px; border: 1px solid var(--line); background: #fff; border-radius: 4px; color: var(--o); }
+.leftnav details { margin: 4px 0 12px; }
+.leftnav summary { cursor: pointer; font-weight: 750; color: #444; padding: 6px 3px; }
+.leftnav ul { list-style: none; margin: 3px 0; padding: 0; }
+.leftnav li a { display: block; padding: 7px 10px; border-left: 3px solid transparent; color: #4b4b51; text-decoration: none; border-radius: 0 4px 4px 0; }
+.leftnav li a:hover, .leftnav li a:focus-visible { background: #ece7eb; color: var(--o); }
+.leftnav li a.active { border-left-color: var(--o); background: #e7dfe5; color: var(--o); font-weight: 750; }
+.leftnav li[hidden], .leftnav details[hidden] { display: none; }
+
+.docmain { margin: var(--header) var(--right) 0 var(--left); min-height: calc(100vh - var(--header)); padding: 44px clamp(28px, 5vw, 78px) 90px; }
+.article { max-width: 760px; margin: 0 auto; }
+.article[hidden] { display: none; }
+.eyebrow { margin: 0 0 10px; color: var(--link); font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.article h1, .article h2, .article h3 { font-family: "Roboto Slab", Georgia, serif; color: #29252a; line-height: 1.2; }
+.article h1 { margin: 0 0 14px; font-size: clamp(32px, 4vw, 46px); color: var(--o); }
+.article h2 { margin: 42px 0 14px; font-size: 26px; }
+.article h3 { margin: 28px 0 10px; font-size: 20px; }
+.lead { font-size: 19px; color: var(--muted); margin: 0 0 32px; }
+.article p { margin: 0 0 18px; }
+.article ol, .article ul { margin: 0 0 22px; padding-left: 24px; }
+.article li { margin: 7px 0; }
+.article strong { font-weight: 750; }
+.admonition { margin: 26px 0; padding: 16px 18px; border-left: 4px solid var(--link); background: #f2f8f8; }
+.admonition > strong { display: block; margin-bottom: 4px; color: #135e62; }
+.admonition p { margin: 0; }
+.admonition.warning { border-color: #c26a36; background: #fff6ef; }
+.admonition.warning strong { color: #8a421d; }
+.admonition.tip { border-color: #5d8b63; background: #f3f8f3; }
+.admonition.tip strong { color: #416746; }
+.admonition.seealso { border-color: var(--o); background: #f7f3f6; }
+.admonition.seealso strong { color: var(--o); }
+.procedure { margin: 0 0 24px; padding-left: 18px; border-left: 3px solid #e4dce2; }
+.procedure p { margin: 0 0 10px; }
+.feature-section { margin-top: 38px; }
+.table-wrap { overflow: auto; margin: 22px 0; }
+.article table { width: 100%; border-collapse: collapse; }
+.article th, .article td { padding: 10px; border: 1px solid var(--line); text-align: left; }
+.article th { background: #f5f2f4; }
+.screenshot { margin: 26px 0 38px; }
+.screenshot img { display: block; width: 100%; height: auto; border: 1px solid #cfcfd5; border-radius: 5px; box-shadow: 0 5px 16px rgba(44, 31, 41, .08); }
+.screenshot figcaption { padding: 10px 2px; color: #555; font-size: 14px; }
+.o-menuselection, .o-guilabel { font-weight: 750; color: #3b3038; }
+
+.righttoc { position: fixed; z-index: 15; top: var(--header); right: 0; bottom: 0; width: var(--right); overflow: auto; padding: 38px 22px; border-left: 1px solid var(--line); background: #fff; }
+.righttoc h2 { margin: 0 0 14px; font-size: 14px; color: #555; }
+.righttoc a { display: block; padding: 5px 0; color: #666; text-decoration: none; font-size: 14px; }
+.righttoc a.toc-h3 { padding-left: 12px; font-size: 13px; }
+.righttoc a:hover, .righttoc a:focus-visible { color: var(--link); }
+.empty-toc { color: #888; font-size: 14px; }
+.missing-page, .search-empty { display: none; margin: 0 auto 24px; max-width: 760px; padding: 12px 15px; background: #fff6ef; border-left: 4px solid #c26a36; }
+.missing-page.show, .search-empty.show { display: block; }
+:focus-visible { outline: 3px solid #f0b44d; outline-offset: 2px; }
+
+@media (max-width: 1180px) {
+  .brand { min-width: 190px; }
+  .topbar-link { display: none; }
+}
+@media (max-width: 1050px) {
+  :root { --right: 0px; }
+  .righttoc { display: none; }
+  .docmain { margin-right: 0; }
+}
+@media (max-width: 760px) {
+  .topbar { padding: 0 12px; gap: 9px; }
+  .brand { min-width: 0; }
+  .brand span:last-child { display: none; }
+  .menu-btn { display: block; }
+  .topbar-search { display: none; }
+  .topbar select { max-width: 150px; }
+  .print-btn { display: none; }
+  .leftnav { transform: translateX(-102%); transition: transform .2s ease; box-shadow: 8px 0 20px rgba(0, 0, 0, .12); }
+  body.menu-open .leftnav { transform: translateX(0); }
+  .docmain { margin-left: 0; padding: 30px 18px 70px; }
+  .article h1 { font-size: 34px; }
+  .article h2 { font-size: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; transition: none !important; }
+}
+@media print {
+  .topbar, .leftnav, .righttoc, .missing-page, .search-empty { display: none !important; }
+  .docmain { margin: 0; padding: 0; }
+  .article { max-width: none; }
+  .article[hidden] { display: none !important; }
+  .screenshot { break-inside: avoid; }
+}
+  </style>
+</head>
+<body data-project-name="Puerto Transit">
+  <header class="topbar">
+    <button class="menu-btn" id="menu-toggle" type="button" aria-label="Ouvrir le menu">☰</button>
+    <div class="brand"><span class="brand-mark">P</span><span>Documentation fonctionnelle Puerto Transit</span></div>
+    <div class="topbar-search">
+      <input id="doc-search" type="search" placeholder="Rechercher dans la documentation" aria-label="Rechercher dans les parcours et les pages">
+      <span class="search-tools"><span id="search-count" aria-live="polite"></span><button class="search-clear" id="clear-search" type="button" aria-label="Effacer la recherche">×</button></span>
+    </div>
+    <select id="version-select" aria-label="Version de la documentation"><option value="v1-2026-09-08-full" selected>v1-2026-09-08-full</option></select>
+    <a class="topbar-link" href="v1-2026-09-08-full-technical.html">Référence technique</a>
+    <button class="print-btn" id="print-current" type="button">Imprimer</button>
+  </header>
+  <nav class="leftnav" aria-label="Documentation">
+    <div class="tree-actions"><button id="expand-all" type="button">Tout développer</button><button id="collapse-all" type="button">Tout réduire</button></div>
+<details open><summary>Prise en main</summary><ul><li><a href="#overview" data-page="overview">Découvrir les parcours</a></li></ul></details>
+<details open><summary>Transit douanier et portail client</summary><ul><li><a href="#page-puerto-transit" data-page="page-puerto-transit">Dossiers, facturation et portail de transit</a></li></ul></details>
+  </nav>
+  <main class="docmain">
+    <div class="missing-page" id="missing-page" role="status">Cette page n’existe pas dans la version choisie. La vue d’ensemble est affichée.</div>
+    <div class="search-empty" id="search-empty" role="status">Aucun résultat dans les parcours, pages ou contenus. Effacez la recherche pour afficher tout le guide.</div>
+<article class="article" id="overview" data-title="Vue d’ensemble"><p class="eyebrow">Guide utilisateur Odoo 19.0</p><h1>Découvrir les parcours Puerto Transit</h1><p class="lead">Du point de départ au résultat final, retrouvez les parcours métier et les pages détaillées de la production documentée.</p><p>Le menu de gauche regroupe les articles par domaine. La recherche couvre les parcours, les titres, les introductions et le contenu. Le sommaire <strong>Sur cette page</strong> suit l’article affiché.</p><aside class="admonition tip"><strong>Conseil de navigation</strong><p>Commencez par le parcours correspondant à votre objectif, puis ouvrez la page détaillée liée à chaque étape.</p></aside><aside class="admonition warning"><strong>Limites de vérification</strong><p>Le guide reste publiable avec les limites explicitement constatées suivantes :</p><ul><li>Documentation complète du code Git de production exact avec limitations runtime documentées.</li><li>Le runtime partagé ptmaroc ne permet aucune affirmation d’installation, rôle, écran, donnée, résultat ou transition pour origin/main.</li><li>Chaque surface candidate est documentée sans capture avec des preuves Git statiques exactes.</li></ul></aside><section class="workflow-section" data-workflow="workflow-dossier-transit"><h2 id="workflow-dossier-transit">Préparer et suivre un dossier de transit</h2><p>Parcours reconstruit depuis le modèle de dossier, ses vues, ses actions et les paramètres de référence.</p><p><strong>Acteurs :</strong> Utilisateur autorisé de l’application<br><strong>Point de départ :</strong> Consulter le guide avec le hash Git de production indiqué.</p><div class="procedure"><p><strong>Étape 1 — Préparer le dossier.</strong> Repérer le type de dossier, les partenaires, l’ETD/ETA, le régime, le bureau et les données de marchandise. Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime. <a href="#page-puerto-transit" data-inline-page="page-puerto-transit">Ouvrir la page</a>.</p><p><strong>Étape 2 — Organiser transport et déclaration.</strong> Repérer les données de transport, scellés, DUM, destination et documents de sortie. Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime. <a href="#page-puerto-transit" data-inline-page="page-puerto-transit">Ouvrir la page</a>.</p><p><strong>Étape 3 — Suivre le statut.</strong> Repérer les transitions Brouillon, Ouvert, En Cours et Clôturé ainsi que leurs boutons. Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime. <a href="#page-puerto-transit" data-inline-page="page-puerto-transit">Ouvrir la page</a>.</p></div><aside class="admonition seealso"><strong>Décisions et variantes</strong><ul><li>Les droits, données et résultats observables ne sont pas vérifiés au runtime partagé.</li><li>Une vérification séparée, en lecture seule, est nécessaire si une base est rattachée sans ambiguïté à ce dépôt.</li></ul></aside><p><strong>Résultat :</strong> Parcours documenté de bout en bout par preuves statiques Git, sans affirmation runtime.</p></section><section class="workflow-section" data-workflow="workflow-facturation-charges"><h2 id="workflow-facturation-charges">Préparer factures et charges du dossier</h2><p>Parcours reconstruit depuis les relations dossier–facture–ligne–charge et les actions de consultation.</p><p><strong>Acteurs :</strong> Utilisateur autorisé de l’application<br><strong>Point de départ :</strong> Consulter le guide avec le hash Git de production indiqué.</p><div class="procedure"><p><strong>Étape 1 — Relier une facture au dossier.</strong> Repérer les champs de facture, fournisseur, devise, poids, paiement et lignes. Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime. <a href="#page-puerto-transit" data-inline-page="page-puerto-transit">Ouvrir la page</a>.</p><p><strong>Étape 2 — Ajouter les charges et débours.</strong> Repérer prestation, prestataire, quantité, prix et mode de facturation. Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime. <a href="#page-puerto-transit" data-inline-page="page-puerto-transit">Ouvrir la page</a>.</p><p><strong>Étape 3 — Consulter les listes liées.</strong> Repérer les actions de dossiers vers factures et charges. Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime. <a href="#page-puerto-transit" data-inline-page="page-puerto-transit">Ouvrir la page</a>.</p></div><aside class="admonition seealso"><strong>Décisions et variantes</strong><ul><li>Les droits, données et résultats observables ne sont pas vérifiés au runtime partagé.</li><li>Une vérification séparée, en lecture seule, est nécessaire si une base est rattachée sans ambiguïté à ce dépôt.</li></ul></aside><p><strong>Résultat :</strong> Parcours documenté de bout en bout par preuves statiques Git, sans affirmation runtime.</p></section><section class="workflow-section" data-workflow="workflow-circuit-documents"><h2 id="workflow-circuit-documents">Organiser circuit et documents de transit</h2><p>Parcours reconstruit depuis documents joints, circuit de validation et compteurs du dossier.</p><p><strong>Acteurs :</strong> Utilisateur autorisé de l’application<br><strong>Point de départ :</strong> Consulter le guide avec le hash Git de production indiqué.</p><div class="procedure"><p><strong>Étape 1 — Préparer les documents.</strong> Repérer les annexes, réceptions, références et relation au dossier. Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime. <a href="#page-puerto-transit" data-inline-page="page-puerto-transit">Ouvrir la page</a>.</p><p><strong>Étape 2 — Décrire le circuit.</strong> Repérer demandeur, destinataire, tâche, priorité, dates et statut du circuit. Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime. <a href="#page-puerto-transit" data-inline-page="page-puerto-transit">Ouvrir la page</a>.</p><p><strong>Étape 3 — Suivre les compteurs.</strong> Repérer les champs calculés de documents, factures et charges sur le dossier. Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime. <a href="#page-puerto-transit" data-inline-page="page-puerto-transit">Ouvrir la page</a>.</p></div><aside class="admonition seealso"><strong>Décisions et variantes</strong><ul><li>Les droits, données et résultats observables ne sont pas vérifiés au runtime partagé.</li><li>Une vérification séparée, en lecture seule, est nécessaire si une base est rattachée sans ambiguïté à ce dépôt.</li></ul></aside><p><strong>Résultat :</strong> Parcours documenté de bout en bout par preuves statiques Git, sans affirmation runtime.</p></section><section class="workflow-section" data-workflow="workflow-portail-client"><h2 id="workflow-portail-client">Consulter ou déposer un dossier depuis le portail</h2><p>Parcours reconstruit depuis les routes, contrôles d’appartenance partenaire et templates QWeb.</p><p><strong>Acteurs :</strong> Utilisateur autorisé de l’application<br><strong>Point de départ :</strong> Consulter le guide avec le hash Git de production indiqué.</p><div class="procedure"><p><strong>Étape 1 — Lister les dossiers.</strong> Repérer les routes de liste, pagination, tris et statistiques par état. Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime. <a href="#page-puerto-transit" data-inline-page="page-puerto-transit">Ouvrir la page</a>.</p><p><strong>Étape 2 — Consulter le détail.</strong> Repérer le contrôle d’existence et d’appartenance du dossier au partenaire connecté. Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime. <a href="#page-puerto-transit" data-inline-page="page-puerto-transit">Ouvrir la page</a>.</p><p><strong>Étape 3 — Préparer une demande.</strong> Repérer la route de formulaire, les champs obligatoires et la validation statique des valeurs. Transition reconstruite depuis le code Git exact (static_code_verified), sans exécution runtime. <a href="#page-puerto-transit" data-inline-page="page-puerto-transit">Ouvrir la page</a>.</p></div><aside class="admonition seealso"><strong>Décisions et variantes</strong><ul><li>Les droits, données et résultats observables ne sont pas vérifiés au runtime partagé.</li><li>Une vérification séparée, en lecture seule, est nécessaire si une base est rattachée sans ambiguïté à ce dépôt.</li></ul></aside><p><strong>Résultat :</strong> Parcours documenté de bout en bout par preuves statiques Git, sans affirmation runtime.</p></section></article>
+<article class="article" id="page-puerto-transit" data-title="Dossiers, facturation et portail de transit" hidden><p class="eyebrow">Transit douanier et portail client · Odoo 19.0</p><h1>Dossiers, facturation et portail de transit</h1><p class="lead">Périmètre Puerto Transit reconstruit depuis le code de production exact.</p><aside class="admonition warning"><strong>Capture non disponible</strong><p>Aucune session runtime ne peut être attribuée sans ambiguïté à puerto_transit/origin/main.</p></aside><p><strong>683</strong> identifiants Git sont reliés à cette rubrique : dossiers de transit, déclarations, marchandises, transport, factures, charges, documents, circuits, paramètres, sécurité et portail client.</p><p>Les preuves sont les blobs Git de <code>1c8e5eab7e9aef3f42e52b0ca7b2052d8b151cea</code>. Les écrans, données, droits, résultats et transitions ne sont pas déclarés observés : le runtime partagé avec ptmaroc ne permet pas de les attribuer à ce dépôt.</p></article>
+  </main>
+  <aside class="righttoc"><h2>Sur cette page</h2><div id="toc-links"></div></aside>
+  <script id="version-routes" type="application/json">{"v1-2026-09-08-full": "v1-2026-09-08-full-functional.html"}</script>
+  <script data-template-asset="nabilum-doc-shell.js">
+(() => {
+  "use strict";
+
+  const articles = [...document.querySelectorAll(".article")];
+  const links = [...document.querySelectorAll("[data-page]")];
+  const search = document.getElementById("doc-search");
+  const searchCount = document.getElementById("search-count");
+  const clearSearch = document.getElementById("clear-search");
+  const searchEmpty = document.getElementById("search-empty");
+  const toc = document.getElementById("toc-links");
+  const missingPage = document.getElementById("missing-page");
+  const projectName = document.body.dataset.projectName;
+  const versionRoutes = JSON.parse(document.getElementById("version-routes").textContent);
+
+  function normalize(value) {
+    return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  }
+
+  function slug(value) {
+    return normalize(value).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  }
+
+  function requestedId() {
+    return (location.hash || "#overview").slice(1).split("--")[0];
+  }
+
+  function buildToc(article) {
+    toc.innerHTML = "";
+    const headings = [...article.querySelectorAll("h2,h3")];
+    if (!headings.length) {
+      toc.innerHTML = '<span class="empty-toc">Aucune sous-section</span>';
+      return;
+    }
+    const used = new Set();
+    headings.forEach((heading, index) => {
+      const localId = heading.id || slug(heading.textContent) || `section-${index + 1}`;
+      let id = localId.startsWith(`${article.id}--`) ? localId : `${article.id}--${localId}`;
+      while (used.has(id)) id = `${article.id}--${localId}-${index + 1}`;
+      used.add(id);
+      heading.id = id;
+      const anchor = document.createElement("a");
+      anchor.href = `#${id}`;
+      anchor.textContent = heading.textContent;
+      if (heading.tagName === "H3") anchor.classList.add("toc-h3");
+      anchor.addEventListener("click", event => {
+        event.preventDefault();
+        heading.scrollIntoView({ behavior: "smooth" });
+        history.replaceState(null, "", `#${id}`);
+      });
+      toc.appendChild(anchor);
+    });
+  }
+
+  function showPage(id) {
+    let article = document.getElementById(id);
+    if (!article || !article.classList.contains("article")) {
+      article = document.getElementById("overview");
+      missingPage.classList.add("show");
+    } else {
+      missingPage.classList.remove("show");
+    }
+    articles.forEach(item => { item.hidden = item !== article; });
+    links.forEach(link => link.classList.toggle("active", link.dataset.page === article.id));
+    document.title = `${article.dataset.title} | ${projectName}`;
+    buildToc(article);
+    document.body.classList.remove("menu-open");
+    window.scrollTo(0, 0);
+    const sectionId = (location.hash || "").slice(1).trim();
+    requestAnimationFrame(() => {
+      if (sectionId.includes("--")) document.getElementById(sectionId)?.scrollIntoView();
+      else window.scrollTo(0, 0);
+    });
+  }
+
+  function applySearch() {
+    const query = normalize(search.value.trim());
+    let matches = 0;
+    document.querySelectorAll(".leftnav li").forEach(item => {
+      const link = item.querySelector("a[data-page]");
+      const article = link ? document.getElementById(link.dataset.page) : null;
+      const haystack = normalize(`${item.innerText} ${article ? article.innerText : ""}`);
+      const visible = !query || haystack.includes(query);
+      item.hidden = !visible;
+      if (visible) matches += 1;
+    });
+    document.querySelectorAll(".leftnav details").forEach(group => {
+      const visible = [...group.querySelectorAll("li")].some(item => !item.hidden);
+      group.hidden = !visible;
+      if (query && visible) group.open = true;
+    });
+    searchCount.textContent = `${matches} résultat${matches > 1 ? "s" : ""}`;
+    clearSearch.classList.toggle("show", Boolean(query));
+    searchEmpty.classList.toggle("show", Boolean(query) && matches === 0);
+  }
+
+  window.addEventListener("hashchange", () => showPage(requestedId()));
+  links.forEach(link => link.addEventListener("click", event => {
+    event.preventDefault();
+    location.hash = link.dataset.page;
+  }));
+  search.addEventListener("input", applySearch);
+  search.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+      search.value = "";
+      applySearch();
+      search.focus();
+    }
+  });
+  clearSearch.addEventListener("click", () => {
+    search.value = "";
+    applySearch();
+    search.focus();
+  });
+  document.getElementById("expand-all").addEventListener("click", () => document.querySelectorAll(".leftnav details").forEach(group => { group.open = true; }));
+  document.getElementById("collapse-all").addEventListener("click", () => document.querySelectorAll(".leftnav details").forEach(group => { group.open = false; }));
+  document.getElementById("menu-toggle").addEventListener("click", () => document.body.classList.toggle("menu-open"));
+  document.getElementById("print-current").addEventListener("click", () => window.print());
+  document.getElementById("version-select").addEventListener("change", event => {
+    const route = versionRoutes[event.target.value];
+    if (route) location.href = `${route}${location.hash || "#overview"}`;
+  });
+
+  applySearch();
+  showPage(requestedId());
+})();
+  </script>
+</body>
+</html>
