@@ -1,0 +1,65 @@
+{
+  "schema_version": 2,
+  "project": "puerto_transit",
+  "odoo_versions": [
+    "19.0"
+  ],
+  "version": "v1",
+  "asset_version": "v1-2026-09-08-full",
+  "parent_version": null,
+  "date": "2026-09-08",
+  "type": "full",
+  "production_ref": "origin/main",
+  "period": {
+    "from_commit": null,
+    "to_commit": "1c8e5eab7e9aef3f42e52b0ca7b2052d8b151cea"
+  },
+  "document": "technical_reference",
+  "sections": [
+    {
+      "id": "tech-puerto-transit",
+      "title": "Référence technique — Puerto Transit",
+      "content": "Cette section couvre 683 identifiants Git du module puerto_transit au HEAD 1c8e5eab7e9aef3f42e52b0ca7b2052d8b151cea. Modèles, champs, méthodes, vues, menus, ACL, données, contrôleurs, QWeb et assets sont analysés comme preuves statiques; aucune installation, autorisation ou exécution runtime n’est attribuée au dépôt."
+    },
+    {
+      "id": "architecture",
+      "title": "Architecture",
+      "content": "Le module s’appuie sur les modèles de dossiers, factures, charges, documents, circuits et paramètres, avec interfaces back-office et portail."
+    },
+    {
+      "id": "security",
+      "title": "Sécurité",
+      "content": "ACL, contrôles d’appartenance partenaire, vues et routes sont analysés statiquement. Aucun droit effectivement accordé n’est déclaré."
+    },
+    {
+      "id": "portal",
+      "title": "Portail",
+      "content": "Les routes de liste, détail et formulaire sont couvertes depuis leurs contrôleurs et templates QWeb, sans exposition runtime affirmée."
+    },
+    {
+      "id": "transitions",
+      "title": "Transitions et calculs",
+      "content": "Les actions de statut du dossier et calculs des factures et charges sont décrits depuis le code exact, sans exécution métier."
+    },
+    {
+      "id": "deployment",
+      "title": "Déploiement",
+      "content": "Cette référence vise exclusivement le HEAD Git exact et ne prescrit ni installation, migration, configuration ni création de données."
+    },
+    {
+      "id": "diagnostics",
+      "title": "Diagnostic",
+      "content": "Avant toute conclusion opérationnelle, établir une correspondance immuable entre base, modules installés et origin/main."
+    },
+    {
+      "id": "rollback",
+      "title": "Retour arrière",
+      "content": "Le retour arrière relève de la procédure client; cette documentation n’exécute aucune opération de déploiement ou de restauration."
+    },
+    {
+      "id": "risks",
+      "title": "Risques et limitations",
+      "content": "Le runtime partagé avec ptmaroc est ambigu pour ce dépôt. Les constats d’installation, de rôles, d’écrans, de données et de transitions sont volontairement omis."
+    }
+  ]
+}

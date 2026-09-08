@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "project": "puerto_transit",
+  "production_ref": "origin/main",
+  "remote_fingerprint": "fc2485353cb6b16cd718d92270afd45a66247e95569374846a41fe4acedd8470",
+  "last_documented_commit": "1c8e5eab7e9aef3f42e52b0ca7b2052d8b151cea",
+  "last_coverage_sha256": "5a0b6c1cc885342a8361b7b40a7146ba938c7cd68ae8c064b895029b7ef85f87",
+  "last_successful_run": "2026-09-07T23:16:44.767186+00:00",
+  "versions": [
+    {
+      "version": "v1",
+      "date": "2026-09-08",
+      "type": "full",
+      "label": "v1-2026-09-08-full",
+      "commit_count": 0,
+      "screenshot_count": 0,
+      "module_count": 1,
+      "file_count": 36,
+      "git_artifact_count": 646,
+      "runtime_artifact_count": 0,
+      "feature_count": 1,
+      "coverage_percent": 100,
+      "parent_version": null,
+      "changed_page_ids": [
+        "page-puerto-transit"
+      ],
+      "functional_json": "versions/v1-2026-09-08-full-functional.json",
+      "functional_html": "versions/v1-2026-09-08-full-functional.html",
+      "technical_json": "versions/v1-2026-09-08-full-technical.json",
+      "technical_html": "versions/v1-2026-09-08-full-technical.html",
+      "git_inventory_json": "versions/v1-2026-09-08-full-git-inventory.json",
+      "runtime_inventory_json": null,
+      "coverage_json": "versions/v1-2026-09-08-full-coverage.json"
+    }
+  ]
+}
